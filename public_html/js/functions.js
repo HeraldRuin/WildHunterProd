@@ -1,0 +1,407 @@
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
+window.bc_format_money = function ($money) {
+
+    if (!$money) {
+        //return bookingCore.free_text;
+    }
+    //if (typeof bookingCore.booking_currency_precision && bookingCore.booking_currency_precision) {
+    //    $money = Math.round($money).toFixed(bookingCore.booking_currency_precision);
+    //}
+
+    $money = bc_number_format($money / bookingCore.currency_rate, bookingCore.booking_decimals, bookingCore.decimal_separator, bookingCore.thousand_separator);
+    var $symbol       = bookingCore.currency_symbol;
+    var $money_string = '';
+
+    switch (bookingCore.currency_position) {
+        case "right":
+            $money_string = $money + $symbol;
+            break;
+        case "left_space":
+            $money_string = $symbol + " " + $money;
+            break;
+
+        case "right_space":
+            $money_string = $money + " " + $symbol;
+            break;
+        case "left":
+        default:
+            $money_string = $symbol + $money;
+            break;
+    }
+
+    return $money_string;
+}
+
+window.bc_number_format = function (number, decimals, dec_point, thousands_sep) {
+
+
+    number         = (number + '')
+        .replace(/[^0-9+\-Ee.]/g, '');
+    var n          = !isFinite(+number) ? 0 : +number,
+        prec       = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+        sep        = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+        dec        = (typeof dec_point === 'undefined') ? '.' : dec_point,
+        s          = '',
+        toFixedFix = function (n, prec) {
+            var k = Math.pow(10, prec);
+            return '' + (Math.round(n * k) / k)
+                .toFixed(prec);
+        };
+    // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+    s              = (prec ? toFixedFix(n, prec) : '' + Math.round(n))
+        .split('.');
+    if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+    }
+    if ((s[1] || '')
+        .length < prec) {
+        s[1] = s[1] || '';
+        s[1] += new Array(prec - s[1].length + 1)
+            .join('0');
+    }
+    return s.join(dec);
+}
+
+window.bc_handle_error_response = function (e) {
+    switch (e.status) {
+        case 401:
+            // not logged in
+            $('#login').modal('show');
+            break;
+    }
+};
+
+window.bc_button_loading = function (btn, isLoading = true) {
+    if (!btn) return;
+
+    if (isLoading) {
+        btn.disabled = true;
+        btn.classList.add('disabled');
+
+        if (!btn.dataset.originalHtml) {
+            btn.dataset.originalHtml = btn.innerHTML;
+        }
+
+        btn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>' +
+            '<span> ' + (btn.textContent.trim() || '...') + '</span>';
+    } else {
+        btn.disabled = false;
+        btn.classList.remove('disabled');
+
+        if (btn.dataset.originalHtml) {
+            btn.innerHTML = btn.dataset.originalHtml;
+        }
+    }
+};
+
+window.openModal = function (modalBaseId, bookingId = null) {
+    let modalId;
+
+    if (bookingId !== null && bookingId !== undefined) {
+        modalId = modalBaseId + bookingId;
+    } else {
+        modalId = modalBaseId;
+    }
+
+    const modalEl = document.getElementById(modalId);
+
+    if (!modalEl) {
+        console.warn('Modal not found:', modalId);
+        return;
+    }
+
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+};
+
+window.closeModal = function (modalBaseId, bookingId = null) {
+    let modalId;
+
+    if (bookingId !== null && bookingId !== undefined) {
+        modalId = modalBaseId + bookingId;
+    } else {
+        modalId = modalBaseId;
+    }
+
+    const modalEl = document.getElementById(modalId);
+
+    if (!modalEl) {
+        console.warn('Modal not found:', modalId);
+        return;
+    }
+
+    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+};
+
+// Form validation
+var forms = document.getElementsByClassName('needs-validation');
+// Loop over them and prevent submission
+var validation = Array.prototype.filter.call(forms, function(form) {
+    form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+});
+
+var bookingCoreApp ={
+    showSuccess:function (configs){
+        var args = {};
+        if(typeof configs == 'object')
+        {
+            args = configs;
+        }else{
+            args.message = configs;
+        }
+        if(!args.title){
+            args.title = i18n.success;
+        }
+        args.centerVertical = true;
+        bootbox.alert(args);
+    },
+    showError(configs) {
+        const status = this._getStatus(configs);
+
+        let args = this._buildErrorArgs(configs);
+
+        args = this._handleStatus(status, args);
+
+        bootbox.alert(args);
+
+        this._handleReload(status);
+    },
+    _getStatus(configs) {
+        return (
+            configs?.status ??
+            configs?.response?.status ??
+            configs?.responseJSON?.status
+        );
+    },
+    _buildErrorArgs(configs) {
+        const args = {
+            title: i18n.warning,
+            centerVertical: true,
+        };
+
+        if (typeof configs === 'object') {
+            if (
+                configs?.responseJSON ||
+                configs?.response ||
+                configs?.message
+            ) {
+                args.message = this._extractErrorMessage(configs);
+            } else {
+                return {
+                    ...args,
+                    ...configs,
+                };
+            }
+        } else {
+            args.message = configs;
+        }
+
+        if (!args.message) {
+            args.message = 'Произошла ошибка';
+        }
+
+        return args;
+    },
+    _handleStatus(status, args) {
+        switch (status) {
+            case 500:
+                return {
+                    ...args,
+                    message: 'Ошибка сервера. Обратитесь к администратору',
+                };
+            case 404:
+                return {
+                    ...args,
+                    message: 'Данные не найдены',
+                };
+
+            default:
+                return args;
+        }
+    },
+
+    _handleReload(status) {
+        const reloadStatuses = [401, 419];
+
+        if (reloadStatuses.includes(status)) {
+            setTimeout(() => window.location.reload(), 2200);
+        }
+    },
+    _extractErrorMessage: function (e) {
+        if (e?.responseJSON?.message) {
+            return e.responseJSON.message;
+        }
+
+        if (e?.responseJSON?.errors) {
+            return Object.values(e.responseJSON.errors).flat().join('\n');
+        }
+
+        if (e?.response?.data?.message) {
+            return e.response.data.message;
+        }
+
+        if (e?.message) {
+            return e.message;
+        }
+
+        return 'Неизвестная ошибка';
+    },
+    showAjaxError:function (e) {
+        const json = e.responseJSON;
+        if(typeof json !='undefined'){
+            if(typeof json.errors !='undefined'){
+                var html = '';
+                Object.values(json.errors).forEach(val => {
+                    html += val + '<br>';
+                });
+                return this.showError(html);
+            }
+            if(json.message){
+                return this.showError(json.message);
+            }
+        }
+        if(e.responseText){
+            return this.showError(e.responseText);
+        }
+    },
+    showAjaxMessage:function (json) {
+        if(json.message)
+        {
+            if(json.status || json.success){
+                this.showSuccess(json);
+            }else{
+                this.showError(json);
+            }
+        }
+    },
+    showConfirm:function (configs) {
+        var args = {};
+        if(typeof configs == 'object')
+        {
+            args = configs;
+        }
+        args.buttons = {
+            confirm: {
+                label: '<i class="fa fa-check"></i> '+i18n.confirm,
+            },
+            cancel: {
+                label: '<i class="fa fa-times"></i> '+i18n.cancel,
+            }
+        };
+        args.centerVertical = true;
+        bootbox.confirm(args);
+    }
+};
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+function post_request(endpoint,data){
+    return fetch(bookingCore.url + endpoint,{
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/json'
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+    })
+}
+window.request = function (url, options = {}) {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+    const headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': csrf,
+        'Accept': 'application/json',
+        ...options.headers,
+    };
+
+    return fetch(url, {
+        credentials: 'same-origin',
+        ...options,
+        headers,
+    })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                throw {
+                    status: res.status,
+                    responseJSON: data,
+                    message: data?.message || 'Error'
+                };
+            }
+
+            return data.data;
+        })
+        .catch((e) => {
+            bookingCoreApp.showError(e);
+            throw e;
+        });
+};
+window.postRequest = function (url, data = {}, options = {}) {
+    return request(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        },
+        body: JSON.stringify(data),
+        ...options
+    });
+};
+window.patchRequest = function (url, data = {}, options = {}) {
+    return request(url, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {})
+        },
+        body: JSON.stringify(data),
+        ...options
+    });
+};
+window.deleteRequest = function (url) {
+    return request(url, {
+        method: 'DELETE'
+    });
+};
+
+// Merge object, same as _. if lodash
+function _isObject(obj) {
+    return obj && typeof obj === 'object' && !Array.isArray(obj);
+}
+
+function _merge(target, ...sources) {
+    for (const source of sources) {
+        if (!_isObject(source)) continue;
+
+        for (const key in source) {
+            const sourceValue = source[key];
+            const targetValue = target[key];
+
+            if (_isObject(sourceValue) && _isObject(targetValue)) {
+                target[key] = _merge({...targetValue}, sourceValue);
+            } else {
+                target[key] = sourceValue;
+            }
+        }
+    }
+    return target;
+}

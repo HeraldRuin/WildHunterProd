@@ -1,0 +1,181 @@
+<?php
+
+namespace Modules\Animals\Models;
+
+use App\Traits\HasHotelAnimalPrice;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Modules\Booking\Models\Bookable;
+use Modules\Booking\Models\Booking;
+use Modules\Hotel\Models\Hotel;
+use Illuminate\Http\Request;
+
+class Animal extends Bookable
+{
+    use SoftDeletes, HasHotelAnimalPrice;
+
+    protected string $bookingClass;
+    public string $checkout_booking_detail_file       = 'Animal::frontend/booking/detail';
+    public  $checkout_booking_detail_modal_file = 'Animal::frontend/booking/detail-modal';
+
+    public  $email_new_booking_file             = 'Animals::emails.new_booking_detail';
+
+    const SERVICE_TROPHIES = 'trophies';
+    const SERVICE_FINES = 'fines';
+    const SERVICE_PREPARATIONS = 'preparations';
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->bookingClass = Booking::class;
+    }
+
+    protected $table = 'bc_animals';
+
+    protected $fillable = [
+        'title',
+        'content',
+        'status',
+        'faqs',
+        'hotel_id',
+    ];
+
+    public function addToCart(Request $request)
+    {
+//        $res = $this->addToCartValidate($request);
+//        if ($res !== true) return $res;
+
+        // Add Booking
+        $booking = new $this->bookingClass();
+        $booking->status = 'processing';
+        $booking->object_id = $request->input('service_id');
+        $booking->object_model = $request->input('service_type');
+        $booking->vendor_id = $this->author_id;
+        $booking->customer_id = Auth::id();
+        $booking->amount_hunting = $request->input('hunting_adults') * $request->input('animal_price');
+        $booking->animal_id = $request->input('animal_id') ?? null;
+        $booking->type = $request->input('type') ?? null;
+        $booking->total_hunting = $request->input('hunting_adults');
+        $booking->start_date = Carbon::parse($request->input('start_date_animal'))->startOfDay();
+        $booking->start_date_animal = Carbon::parse($request->input('start_date_animal'))->startOfDay();
+        $booking->hotel_id = $request->input('hotel_id');
+        if ($request->input('userRole') === 'baseadmin') {
+            $booking->event = true;
+        }
+
+        $check = $booking->save();
+
+        if ($check) {
+            return $this->sendSuccess([
+                'url' => $booking->getCheckoutUrl(),
+                'booking_code' => $booking->code,
+            ]);
+        }
+        return $this->sendError(__("Can not check availability"));
+    }
+
+    public function scopeForHotel($query, int $hotelId)
+    {
+        return $query->join('bc_hotel_animals as bha', function ($join) use ($hotelId) {
+            $join->on('bha.animal_id', '=', 'bc_animals.id')
+                ->where('bha.hotel_id', '=', $hotelId);
+        })
+            ->select('bc_animals.*', 'bha.status as animal_status');
+    }
+
+    public function scopeWithPreparationsForHotel($query, int $hotelId)
+    {
+        return $query->with(['preparations' => function ($q) use ($hotelId) {
+            $q->select('id','animal_id','type')
+                ->with(['hotelPrices' => function ($q2) use ($hotelId) {
+                    $q2->where('hotel_id', $hotelId);
+                }]);
+        }]);
+    }
+
+    public static function getServiceIconFeatured()
+    {
+        return "icofont-paw";
+    }
+
+    public function getCheckoutUrl()
+    {
+        return route('animal.booking.checkout', ['booking_code' => $this->id]);
+    }
+
+    public static function isEnable(): bool
+    {
+        return true;
+    }
+    public static function isEnableForAdmin(): bool
+    {
+        return setting_item('admin_animal_disable');
+    }
+
+    public function getNumberReviewsInService($status = false)
+    {
+        return $this->reviewClass::countReviewByServiceID($this->id, false, $status, $this->type) ?? 0;
+    }
+    public function hotels(): BelongsToMany
+    {
+        return $this->belongsToMany(Hotel::class, 'bc_hotel_animals','animal_id','hotel_id')->withPivot('status', 'hunters_count');
+    }
+    public function periods(): HasMany
+    {
+        return $this->hasMany(AnimalPricePeriod::class);
+    }
+    //Трофеи
+    public function trophies(): HasMany
+    {
+        return $this->hasMany(AnimalTrophy::class);
+    }
+    //Штрафы
+    public function fines(): HasMany
+    {
+        return $this->hasMany(AnimalFine::class, 'animal_id', 'id');
+    }
+    //Разделка
+    public function preparations(): HasMany
+    {
+        return $this->hasMany(AnimalPreparation::class, 'animal_id', 'id');
+    }
+
+    public function scopeForHotelWithService($query, $hotelId, $relation)
+    {
+        return $query
+            ->join('bc_hotel_animals as bha', function ($join) use ($hotelId) {
+                $join->on('bha.animal_id', '=', 'bc_animals.id')
+                    ->where('bha.hotel_id', '=', $hotelId);
+            })
+            ->whereHas($relation, function ($q) use ($hotelId) {
+                $q->whereHas('hotelPrices', function ($q2) use ($hotelId) {
+                    $q2->where('hotel_id', $hotelId);
+                });
+            })
+            ->select([
+                'bc_animals.id',
+                'bc_animals.title as title',
+                'bha.status as animal_status'
+            ])
+            ->with([
+                $relation => function ($q) use ($hotelId) {
+                    $q->select('id', 'animal_id', 'type')
+                        ->whereHas('hotelPrices', function ($q2) use ($hotelId) {
+                            $q2->where('hotel_id', $hotelId);
+                        });
+                }
+            ]);
+    }
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where('bc_animals.title', 'like', "%{$search}%");
+        }
+
+        return $query;
+    }
+}
+

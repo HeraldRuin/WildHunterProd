@@ -1,0 +1,38 @@
+@extends('layouts.user')
+@section('content')
+    <h2 class="title-bar">
+        {{__("Change Password")}}
+    </h2>
+    @include('admin.message')
+    <form action="{{ route("user.change_password.update") }}" method="post">
+        @csrf
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>{{__("Current Password")}}</label>
+                    <input type="password" required name="current-password" id="old-password" placeholder="{{__("Current Password")}}" value="{{ $current_password }}" class="form-control">
+                    <i class="toggle-change-password icofont-eye-blocked" id="toggle-change-password-icon-old"></i>
+                </div>
+                <div class="form-group">
+                    <label>{{__("New Password")}}</label>
+                    <input type="password" required name="new-password" id="new-password" minlength="8" placeholder="{{__("New Password")}}" class="form-control">
+                    <i class="toggle-change-password icofont-eye-blocked" id="toggle-change-password-icon-new"></i>
+               </div>
+                <button type="button" class="btn-generate-password" id="generate-password-new">{{__('Generate')}}</button>
+                <div class="form-group">
+                    <label>{{__("New Password Again")}}</label>
+                    <input type="password" required name="new-password_confirmation" id="new-password_confirmation" minlength="8" placeholder="{{__("New Password Again")}}" class="form-control">
+                    <i class="toggle-change-password icofont-eye-blocked" id="toggle-change-password-icon-confirm"></i>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <hr>
+                <input type="submit" class="btn btn-primary" value="{{__("Change Password")}}">
+                <a href="{{ route("user.profile.index") }}" class="btn btn-default">{{__("Cancel")}}</a>
+            </div>
+        </div>
+    </form>
+@endsection
+@push('js')
+
+@endpush

@@ -1,0 +1,86 @@
+<?php
+
+
+namespace Modules\User\Controllers;
+
+
+use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Matrix\Exception;
+use Modules\FrontendController;
+use Illuminate\Validation\Rules\Password;
+use Modules\User\Events\SendMailUserUpdatePassword;
+
+
+class PasswordController extends FrontendController
+{
+
+    use ResetsPasswords;
+
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+        $data = [
+            'breadcrumbs' => [
+                [
+                    'name' => __('Setting'),
+                    'url'  => route("user.profile.index")
+                ],
+                [
+                    'name'  => __('Change Password'),
+                    'class' => 'active'
+                ]
+            ],
+            'page_title'  => __("Change Password"),
+        ];
+
+        $data['current_password'] = Crypt::decryptString($user->current_password) ?? null;
+
+        return view('User::frontend.changePassword', $data);
+    }
+
+    public function changePasswordUpdate(Request $request)
+    {
+        if(is_demo_mode()){
+            return back()->with('error',"Demo mode: disabled");
+        }
+        $user = Auth::user();
+
+        if (!(Hash::check(Crypt::decryptString($user->current_password), Auth::user()->password))) {
+            // The passwords matches
+            return redirect()->back()->with("error", __("Your current password does not matches with the password you provided. Please try again."));
+        }
+        if (strcmp(Crypt::decryptString($user->current_password), $request->get('new-password')) == 0) {
+            return redirect()->back()->with("error", __("New Password cannot be same as your current password. Please choose a different password."));
+        }
+        $request->validate([
+            'new-password'     => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->uncompromised(),
+                'confirmed',
+            ],
+        ]);
+        //Change Password
+        $user = Auth::user();
+        $this->resetPassword($user, $request->input('new-password'));
+
+        try {
+            event(new SendMailUserUpdatePassword($user));
+
+        } catch (Exception $exception) {
+
+            Log::warning("SendMailUserUpdatePassword: " . $exception->getMessage());
+        }
+
+        return redirect()->back()->with('success', __('Password changed successfully !'));
+    }
+
+}

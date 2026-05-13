@@ -1,0 +1,20 @@
+# Laravel (src)
+bc-cms/vendor/
+bc-cms/node_modules/
+bc-cms/storage/*
+bc-cms/.env
+bc-cms/.env.backup
+bc-cms/.env.production
+bc-cms/supervisord.pid
+
+# IDE
+/.vscode
+/.idea
+
+# Docker
+docker/
+docker-compose.yml
+.env
+
+# Files
+my_scripts/

@@ -1,0 +1,96 @@
+<?php
+use Illuminate\Support\Facades\Route;
+
+// Booking
+Route::group(['prefix'=>config('booking.booking_route_prefix')],function(){
+    Route::post('/addToCart','BookingController@addToCart');
+    Route::post('/addToCartAnimal','BookingController@addToCartAnimal');
+    Route::post('/validateRooms','BookingController@validateRooms');
+    Route::post('/doCheckout','BookingController@doCheckout')->name('booking.doCheckout');
+    Route::get('/confirm/{gateway}','BookingController@confirmPayment')->name('booking.confirm-payment');
+    Route::get('/cancel/{gateway}','BookingController@cancelPayment');
+    Route::get('/{code}','BookingController@detail');
+    Route::get('/{code}/checkout','BookingController@checkout')->name('booking.checkout');
+    Route::get('/{code}/check-status','BookingController@checkStatusCheckout');
+    Route::post('/{booking}/change-user','BookingController@changeUserBooking');
+    Route::post('/{booking}/confirm','BookingController@confirmBooking');
+    Route::post('/{booking}/start-collection','BookingController@startCollection');
+    Route::post('/{booking}/cancel-collection','BookingController@cancelCollection');
+    Route::post('/{booking}/finish-collection','BookingController@finishCollection');
+    Route::post('/{booking}/invite-hunter','BookingController@inviteHunter');
+    Route::post('/{booking}/invite-hunter-by-email','BookingController@inviteHunterByEmail');
+    Route::get('/{booking}/invited-hunters','BookingController@getInvitedHunters');
+    Route::post('/{booking}/accept-invitation','BookingController@acceptInvitation');
+    Route::post('/{booking}/decline-invitation','BookingController@declineInvitation');
+    Route::post('/{booking}/cancel','BookingController@cancelBooking');
+    Route::post('/{booking}/complete','BookingController@completeBooking');
+
+
+    // Добавление услуг
+    Route::get('/{booking}/saved-services', 'BookingController@getBookingServices');
+    Route::post('/{booking}/save-services', 'BookingController@saveServices');
+
+    Route::get('/{booking}/trophies/animals', 'BookingController@getAnimalTrophyServices');
+    Route::post('/{booking}/trophies', 'BookingController@storeTrophy');
+    Route::delete('/{booking}/trophy/{trophyId}', 'BookingController@deleteTrophy');
+
+    Route::get('/{booking}/penalty/animals', 'BookingController@getAnimalPenaltyServices');
+    Route::post('/{booking}/penalty', 'BookingController@storePenalty');
+    Route::delete('/{booking}/penalty/{penaltyId}', 'BookingController@deletePenalty');
+
+    Route::get('/{booking}/preparation/animals', 'BookingController@getAnimalPreparationServices');
+    Route::post('/{booking}/preparation', 'BookingController@storePreparation');
+    Route::delete('/{booking}/preparation/{preparationId}', 'BookingController@deletePreparation');
+
+    Route::post('/{booking}/food', 'BookingController@storeFoods');
+    Route::delete('/{booking}/food/{foodId}', 'BookingController@deleteFoods');
+
+    Route::get('/{booking}/addetional/services', 'BookingController@getAddetionalServices');
+    Route::post('/{booking}/addetional', 'BookingController@storeAddetional');
+    Route::delete('/{booking}/addetional/{addetionalId}', 'BookingController@deleteAddetional');
+
+    Route::get('/{booking}/spending/users', 'BookingController@getUserSpendingServices');
+    Route::post('/{booking}/spending', 'BookingController@storeSpending');
+    Route::delete('/{booking}/spending/{spendingId}', 'BookingController@deleteSpending');
+
+
+    //Предоплата
+    Route::post('/{booking}/prepayment-paid', 'BookingController@storePrepayment');
+    Route::post('/{booking}/check/prepayment-paid', 'BookingController@checkPrepayment');
+    Route::get('/{booking}/check/payment-status', 'BookingController@checkPaymentStatus');
+
+    //Замена или удаление охотника
+    Route::post('/{booking}/replace-hunter', 'BookingController@replaceHunter');
+    Route::delete('/{booking}/remove/hunter', 'BookingController@deleteHunter');
+
+    // Койко-место
+    Route::post('/{booking}/places', 'BookingController@places');
+    Route::post('/{booking}/select-place', 'BookingController@selectPlace');
+    Route::post('/{booking}/cancel-select-place', 'BookingController@cancelSelectPlace');
+//    Route::post('/{booking}/check/is-places-complete', 'BookingController@checkBedSelectCompleted');
+
+    //Админ базы переводит бронь в статус оплачено/завершено
+    Route::patch('/{booking}/mark-paid', 'BookingController@markPaid');
+    Route::patch('/{booking}/mark-completed', 'BookingController@markCompleted');
+
+    //ical
+	Route::get('/export-ical/{type}/{id}','BookingController@exportIcal')->name('booking.admin.export-ical');
+    //inquiry
+    Route::post('/addEnquiry','BookingController@addEnquiry');
+    Route::post('/setPaidAmount','BookingController@setPaidAmount')->name('booking.setPaidAmount')->middleware(['auth']);
+
+    Route::get('/modal/{booking}','BookingController@modal')->name('booking.modal');
+
+    Route::post('/storeNoteBooking','BookingController@storeNoteBooking');
+
+    //Калькуляция
+    Route::get('/{booking}/calculating', 'BookingController@getCalculating');
+});
+
+
+Route::group(['prefix'=>'gateway'],function(){
+    Route::get('/confirm/{gateway}','NormalCheckoutController@confirmPayment')->name('gateway.confirm');
+    Route::get('/cancel/{gateway}','NormalCheckoutController@cancelPayment')->name('gateway.cancel');
+    Route::get('/info','NormalCheckoutController@showInfo')->name('gateway.info');
+    Route::match(['get','post'],'/gateway_callback/{gateway}','BookingController@callbackPayment')->name('gateway.webhook');
+});

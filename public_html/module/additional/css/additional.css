@@ -1,0 +1,50 @@
+.trophy-animal-col { width: 340px; }
+.trophy-type-col   { width: 360px; }
+.trophy-count-col { width: 200px; }
+.animal-col { width: 530px; }
+.count-col   { width: 360px; }
+
+/*Штраф*/
+.animal-penalty-col { width: 340px; }
+.type-col   { width: 360px; }
+.hunter-col { width: 200px; }
+
+ /*Питание*/
+.food-row {
+    align-items: center;
+    gap: 10px;
+}
+.food-name-col {
+    width: 512px;
+}
+.food-count-col {
+    width: 80px;
+}
+
+/*Другое*/
+.other-row {
+    align-items: center;
+    gap: 10px;
+}
+.other-col.other-name-col {
+    width: 435px;
+}
+
+/*Траты охотника*/
+.spending-row {
+    align-items: center;
+}
+.spending-hunter-col {
+    width: 360px;
+}
+.spending-count-col {
+    width: 320px;
+}
+.spending-comment-col {
+    width: 220px;
+}
+
+
+
+
+
