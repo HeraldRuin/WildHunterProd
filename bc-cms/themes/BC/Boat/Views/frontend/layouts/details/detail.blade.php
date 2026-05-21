@@ -115,27 +115,27 @@
 @include('Boat::frontend.layouts.details.specs')
 @include('Boat::frontend.layouts.details.attributes')
 @if($translation->faqs)
-<div class="g-faq">
-    <h3> {{__("FAQs")}} </h3>
-    @foreach($translation->faqs as $item)
-        <div class="item">
-            <div class="header">
-                <i class="field-icon icofont-support-faq"></i>
-                <h5>{{$item['title'] ?? ''}}</h5>
-                <span class="arrow"><i class="fa fa-angle-down"></i></span>
+    <div class="g-faq">
+        <h3> {{__("FAQs")}} </h3>
+        @foreach($translation->faqs as $item)
+            <div class="item">
+                <div class="header">
+                    <i class="field-icon icofont-support-faq"></i>
+                    <h5>{{$item['title'] ?? ''}}</h5>
+                    <span class="arrow"><i class="fa fa-angle-down"></i></span>
+                </div>
+                <div class="body">
+                    {{$item['content']}}
+                </div>
             </div>
-            <div class="body">
-                {{$item['content']}}
-            </div>
-        </div>
-    @endforeach
-</div>
+        @endforeach
+    </div>
 @endif
 @if(!empty($translation->cancel_policy))
     <div class="g-overview">
         <h3>{{__("Cancellation Policy")}}</h3>
         <div class="description">
-            <?php echo $translation->cancel_policy ?>
+                <?php echo $translation->cancel_policy ?>
         </div>
     </div>
 @endif
@@ -143,16 +143,16 @@
     <div class="g-overview">
         <h3>{{__("Additional Terms & Information")}}</h3>
         <div class="description">
-            <?php echo $translation->terms_information ?>
+                <?php echo $translation->terms_information ?>
         </div>
     </div>
 @endif
 @include('Boat::frontend.layouts.details.include-exclude')
 @if($row->map_lat && $row->map_lng)
-<div class="g-location">
-    <h3>{{__("Location")}}</h3>
-    <div class="location-map">
-        <div id="map_content"></div>
+    <div class="g-location">
+        <h3>{{__("Location")}}</h3>
+        <div class="location-map">
+            <div id="map_content"></div>
+        </div>
     </div>
-</div>
 @endif

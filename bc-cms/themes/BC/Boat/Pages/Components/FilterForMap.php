@@ -5,7 +5,7 @@ namespace Themes\BC\Boat\Pages\Components;
 use App\BaseComponent;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
-use \Modules\Boat\Models\Boat;
+use Modules\AaNotUsed\Boat\Models\Boat;
 use \Modules\Location\Models\Location;
 use \Modules\Core\Models\Attributes;
 
@@ -33,7 +33,7 @@ class FilterForMap extends BaseComponent
         $boatClass = app(Boat::class);
         return $boatClass::getMinMaxPrice();
     }
-    
+
     #[Computed]
     public function attrsList()
     {
@@ -75,7 +75,7 @@ class FilterForMap extends BaseComponent
             'attrs' => $this->attrs,
         ];
     }
-    
+
     public function render()
     {
         return view('Boat::frontend.components.filter.for-map');

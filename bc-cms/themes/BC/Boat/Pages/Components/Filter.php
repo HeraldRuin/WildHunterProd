@@ -3,7 +3,7 @@
 namespace Themes\BC\Boat\Pages\Components;
 
 use App\BaseComponent;
-use \Modules\Boat\Models\Boat;
+use Modules\AaNotUsed\Boat\Models\Boat;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Modules\Core\Models\Attributes;

@@ -19,7 +19,7 @@ class ModuleProvider extends ModuleServiceProvider
     public function boot(SitemapHelper $sitemapHelper){
 
         $this->publishes([
-            __DIR__.'/Config/config.php' => config_path('page.php'),
+            __DIR__ . '/Config/config.php' => config_path('page.php'),
         ]);
 
         $sitemapHelper->add("page",[app()->make(Page::class),'getForSitemap']);
@@ -33,7 +33,7 @@ class ModuleProvider extends ModuleServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/Config/config.php', 'page'
+            __DIR__ . '/Config/config.php', 'page'
         );
 
         $this->app->register(RouterServiceProvider::class);

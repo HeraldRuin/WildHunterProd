@@ -5,7 +5,7 @@ namespace Themes\BC\Boat\Pages;
 use Livewire\WithPagination;
 use Livewire\Attributes\Url;
 use App\BaseComponent;
-use \Modules\Boat\Models\Boat;
+use Modules\AaNotUsed\Boat\Models\Boat;
 use Livewire\Attributes\On;
 
 class BoatIndexPage extends BaseComponent

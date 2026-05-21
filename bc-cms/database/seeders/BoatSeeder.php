@@ -639,7 +639,7 @@ class BoatSeeder extends Seeder
                 if( rand(0 , count($term_ids) ) == $k) continue;
                 if( rand(0 , count($term_ids) ) == $k) continue;
                 if( rand(0 , count($term_ids) ) == $k) continue;
-                \Modules\Boat\Models\BoatTerm::firstOrCreate([
+                \Modules\AaNotUsed\Boat\Models\BoatTerm::firstOrCreate([
                     'term_id' => $term_id,
                     'target_id' => $boat_id
                 ]);
@@ -665,7 +665,7 @@ class BoatSeeder extends Seeder
             foreach ($term_ids as $k=>$term_id) {
                 if( rand(0 , count($term_ids) ) == $k) continue;
                 if( rand(0 , count($term_ids) ) == $k) continue;
-                \Modules\Boat\Models\BoatTerm::firstOrCreate([
+                \Modules\AaNotUsed\Boat\Models\BoatTerm::firstOrCreate([
                     'term_id' => $term_id,
                     'target_id' => $boat_id
                 ]);
@@ -674,7 +674,7 @@ class BoatSeeder extends Seeder
 
         //Update Review Score
         foreach ($IDs as $service_id){
-            \Modules\Boat\Models\Boat::find($service_id)->update_service_rate();
+            \Modules\AaNotUsed\Boat\Models\Boat::find($service_id)->update_service_rate();
         }
     }
 }
