@@ -3,12 +3,6 @@
         <div class="content">
             <div class="header-left d-flex align-items-center justify-content-between w-100">
                 <div class="bc-menu">
-                    <?php
-                    generate_menu('primary', [
-                        'walker' => \Themes\BC\Core\Walkers\MenuWalker::class,
-                        'custom_class' => '',
-                    ]);
-                    ?>
                 </div>
 
                 <div class="logo-center-wrapper" style="position: relative; height: 100px;">
