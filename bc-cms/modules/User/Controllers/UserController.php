@@ -118,8 +118,6 @@ class UserController extends FrontendController
         $data = [
             'user'         => $user,
             'page_title'       => __("Profile"),
-            'weapons' => WeaponType::all(),
-            'calibers' => Caliber::all(),
             'userWeapons'  => $userWeapons,
             'breadcrumbs'      => [
                 [
@@ -130,11 +128,7 @@ class UserController extends FrontendController
             'is_vendor_access' => $this->hasPermission('hunter_dashboard_access')
         ];
 
-        if (is_baseAdmin()){
-          return view('User::frontend.profile.profile_base_admin', $data);
-        }else {
-           return view('User::frontend.profile.profile_hunter', $data);
-        }
+        return view('User::frontend.profile.profile_user', $data);
     }
 
     public function profileUpdate(Request $request)
