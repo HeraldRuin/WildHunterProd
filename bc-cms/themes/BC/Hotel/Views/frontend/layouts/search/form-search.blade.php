@@ -21,10 +21,6 @@
                                 @include('Hotel::frontend.layouts.search.fields.location')
                             @break
 
-                            @case ('animals')
-                                @include('Hotel::frontend.layouts.search.fields.animals')
-                            @break
-
                             @case ('date')
                                 @include('Hotel::frontend.layouts.search.fields.date')
                             @break
