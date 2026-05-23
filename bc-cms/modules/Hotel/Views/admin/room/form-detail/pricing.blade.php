@@ -51,7 +51,7 @@
                 <input type="number" min="1"  value="{{$row->adults ?? 1}}"  name="adults" class="form-control">
             </div>
         </div>
-        <div class="col-md-6" style="display: none;">
+        <div class="col-md-6">
             <div class="form-group">
                 <label>{{__("Max Children")}} </label>
                 <input type="number" min="0"  value="{{$row->children ?? 0}}"  name="children" class="form-control">
