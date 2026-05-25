@@ -71,13 +71,13 @@
                                         <span v-else>{{__('Adults')}}</span>
                                     </span>
                                 </span>
-{{--                                ---}}
-{{--                                <span class="children" >--}}
-{{--                                    <span class="one" >@{{children}}--}}
-{{--                                        <span v-if="children < 2">{{__('Child')}}</span>--}}
-{{--                                        <span v-else>{{__('Children')}}</span>--}}
-{{--                                    </span>--}}
-{{--                                </span>--}}
+                                -
+                                <span class="children">
+                                    <span class="one">@{{children}}
+                                        <span v-if="children < 2">{{__('Child')}}</span>
+                                        <span v-else>{{__('Children')}}</span>
+                                    </span>
+                                </span>
                             </div>
                         </div>
                         <div class="dropdown-menu select-guests-dropdown" >
@@ -89,7 +89,7 @@
                                     <span class="btn-add2" data-input="adults" @click="addPersonType('adults')"><i class="icon ion-ios-add"></i></span>
                                 </div>
                             </div>
-                            <div class="dropdown-item-row d-none">
+                            <div class="dropdown-item-row">
                                 <div class="label">{{__('Children')}}</div>
                                 <div class="val">
                                     <span class="btn-minus2" data-input="children" @click="minusPersonType('children')"><i class="icon ion-md-remove"></i></span>
@@ -265,50 +265,6 @@
                 </div>
             </div>
         </div>
-
-{{--        <div class="g-rules">--}}
-{{--            <h3>{{__("Rules")}}</h3>--}}
-{{--            <div class="description">--}}
-{{--                <div class="row">--}}
-{{--                    <div class="col-lg-4">--}}
-{{--                        <div class="key">{{__("Check In")}}</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-8">--}}
-{{--                        <div class="value">	{{$row->check_in_time}} </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                <div class="row">--}}
-{{--                    <div class="col-lg-4">--}}
-{{--                        <div class="key">{{__("Check Out")}}</div>--}}
-{{--                    </div>--}}
-{{--                    <div class="col-lg-8">--}}
-{{--                        <div class="value">	{{$row->check_out_time}} </div>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--                @if($translation->policy)--}}
-{{--                    <div class="row">--}}
-{{--                        <div class="col-lg-4">--}}
-{{--                            <div class="key">{{__("Hotel Policies")}}</div>--}}
-{{--                        </div>--}}
-{{--                        <div class="col-lg-8">--}}
-{{--                            @foreach($translation->policy as $key => $item)--}}
-{{--                                <div class="item @if($key > 1) d-none @endif">--}}
-{{--                                    <div class="strong">{{$item['title'] ?? ''}}</div>--}}
-{{--                                    <div class="context">{!! $item['content'] !!}</div>--}}
-{{--                                </div>--}}
-{{--                            @endforeach--}}
-{{--                            @if( count($translation->policy) > 2)--}}
-{{--                                <div class="btn-show-all">--}}
-{{--                                    <span class="text">{{__("Show All")}}</span>--}}
-{{--                                    <i class="fa fa-caret-down"></i>--}}
-{{--                                </div>--}}
-{{--                            @endif--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                @endif--}}
-{{--            </div>--}}
-{{--        </div>--}}
-
         <div class="bc-hr"></div>
         @includeIf("Hotel::frontend.layouts.details.hotel-surrounding")
 
@@ -335,12 +291,11 @@
             {{__("No room available with your selected date. Please change your search critical")}}
         </div>
     </div>
-        @include('Hotel::frontend.layouts.details.hotel-animals')
             <div class="pt-2">
-                <div v-if="total_price > 0 || animalCheckPassed">
+                <div v-if="total_price > 0">
                     <button type="button" class="btn btn-primary w-100"
                             @click="doSubmit($event)"
-                            :class="{'disabled':onSubmit}"
+{{--                            :class="{'disabled':onSubmit}"--}}
                             style="height: 80px; font-size: large">
                         <span>{{__("Book Now")}}</span>
                         <i v-show="onSubmit" class="fa fa-spinner fa-spin"></i>
@@ -353,34 +308,6 @@
 
 <div class="g-all-attribute is_mobile">
     @include('Hotel::frontend.layouts.details.hotel-attributes')
-</div>
-
-<div class="modal fade" id="confirmAnimalBooking" tabindex="-1" role="dialog" aria-labelledby="confirmBookingAnimalOnlyLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <p id="confirmBookingAnimalText">Бронируете только охоту, без жилья?</p>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-primary" id="confirmBookingAnimalYes">Да</button>
-                <button type="button" class="btn btn-secondary" id="confirmBookingAnimalNo" data-bs-dismiss="modal">Нет</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="confirmSingleHotelBooking" tabindex="-1" role="dialog" aria-labelledby="confirmSingleBookingLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-body text-center">
-                <p id="confirmSingleBookingText"></p>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-primary" id="confirmSingleBookingYes">Да</button>
-                <button type="button" class="btn btn-secondary" id="confirmSingleBookingNo">Нет</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 
