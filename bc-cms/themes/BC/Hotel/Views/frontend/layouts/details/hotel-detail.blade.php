@@ -287,10 +287,10 @@
         @endif
 
         <div class="end_room_sticky"></div>
-            <div v-if="hasSearched && !firstLoad && rooms.length === 0" class="alert alert-warning">
+            <div v-if="hasSearched" class="alert alert-warning">
                 {{ __("No room available with your selected date. Please change your search critical") }}
             </div>
-        </div>
+    </div>
             <div class="pt-2">
                 <div v-if="total_price > 0">
                     <button type="button" class="btn btn-primary w-100"

@@ -692,6 +692,11 @@
                         return;
                     }
                 }
+
+                if(!this.start_date || !this.end_date){
+                    me.firstLoad = false;
+                    return;
+                }
                 this.onLoadAvailability = true;
 
                 postRequest(bookingCore.module.hotel+'/checkAvailability', {
@@ -703,13 +708,12 @@
                     children:this.children,
                 })
                     .then((res) => {
-                        me.hasSearched = true;
                         me.rooms = res.rooms;
+                        me.hasSearched = res.is_empty;
                         me.$nextTick(function () { me.initJs();})
                     })
                     .finally(() => {
                         me.onLoadAvailability = false;
-                        me.firstLoad = false;
                         }
                     );
 			},

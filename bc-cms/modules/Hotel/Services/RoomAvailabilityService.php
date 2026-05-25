@@ -395,13 +395,15 @@ class RoomAvailabilityService
         if ($totalCapacity < $requestedAdults) {
             return [
                 'data' => [
-                    'rooms'  => []
+                    'rooms'  => [],
+                    'is_empty' => true,
                 ],
             ];
         }
         return [
             'data' => [
-                'rooms'  => $rooms
+                'rooms'  => $rooms,
+                'is_empty' => false,
             ],
         ];
     }
