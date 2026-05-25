@@ -5,6 +5,7 @@ namespace Modules\Hotel\Services;
 use Carbon\Carbon;
 use Modules\Booking\Models\Booking;
 use Modules\Hotel\DTO\RoomCalendarData;
+use Modules\Hotel\Models\Hotel;
 use Modules\Hotel\Models\HotelRoom;
 use Modules\Hotel\Models\HotelRoomDate;
 
@@ -334,5 +335,74 @@ class RoomAvailabilityService
 
         $endDate = Carbon::parse($booking->end_date)->format('Y-m-d');
         return $endDate === $date;
+    }
+
+    public function checkAvailability($request)
+    {
+        $hotel_id = \request('hotel_id');
+        $adults = \request('adults');
+        if(\request()->input('firstLoad') == "false") {
+            $rules = [
+                'hotel_id'   => 'required',
+                'start_date' => 'required:date_format:Y-m-d',
+                'end_date'   => 'required:date_format:Y-m-d',
+                'adults'     => 'required',
+            ];
+            $validator = \Validator::make(request()->all(), $rules);
+            if ($validator->fails()) {
+//                return $this->sendError($validator->errors()->all());
+            }
+
+//            if(strtotime(\request('end_date')) - strtotime(\request('start_date')) < DAY_IN_SECONDS){
+//                return $this->sendError(__("Dates are not valid"));
+//            }
+            if(strtotime(\request('end_date')) - strtotime(\request('start_date')) > 30*DAY_IN_SECONDS){
+//                return $this->sendError(__("Maximum day for booking is 30"));
+            }
+        }
+        $hotel = Hotel::find($hotel_id);
+        if(empty($hotel_id) or empty($hotel)){
+//            return $this->sendError(__("Hotel not found"));
+        }
+
+        if(\request()->input('firstLoad') == "false") {
+            $numberDays = abs(strtotime(\request('end_date')) - strtotime(\request('start_date'))) / 86400;
+            if(!empty($hotel->min_day_stays) and  $numberDays < $hotel->min_day_stays){
+//                return $this->sendError(__("You must to book a minimum of :number days",['number'=>$hotel->min_day_stays]));
+            }
+
+            if(!empty($hotel->min_day_before_booking)){
+                $minday_before = strtotime("today +".$hotel->min_day_before_booking." days");
+                if(  strtotime(\request('start_date')) < $minday_before){
+//                    return $this->sendError(__("You must book the service for :number days in advance",["number"=>$hotel->min_day_before_booking]));
+                }
+            }
+        }
+
+        $rooms = $hotel->getRoomsAvailability(request()->input());
+
+        $requestedAdults = (int) $adults;
+        $totalCapacity = 0;
+
+        foreach ($rooms as $room) {
+            $room_adults = (int) ($room['adults'] ?? 0);
+            $numRooms    = (int) ($room['number'] ?? 0);
+
+            $roomCapacity = $room_adults * $numRooms;
+            $totalCapacity += $roomCapacity;
+        }
+
+        if ($totalCapacity < $requestedAdults) {
+            return [
+                'data' => [
+                    'rooms'  => []
+                ],
+            ];
+        }
+        return [
+            'data' => [
+                'rooms'  => $rooms
+            ],
+        ];
     }
 }
