@@ -265,6 +265,9 @@
                 </div>
             </div>
         </div>
+        <div v-if="hasSearched" class="alert alert-warning">
+            {{ __("No room available with your selected date. Please change your search critical") }}
+        </div>
         <div class="bc-hr"></div>
         @includeIf("Hotel::frontend.layouts.details.hotel-surrounding")
 
@@ -287,9 +290,7 @@
         @endif
 
         <div class="end_room_sticky"></div>
-            <div v-if="hasSearched" class="alert alert-warning">
-                {{ __("No room available with your selected date. Please change your search critical") }}
-            </div>
+
     </div>
             <div class="pt-2">
                 <div v-if="total_price > 0">
