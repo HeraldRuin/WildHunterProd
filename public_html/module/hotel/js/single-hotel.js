@@ -742,70 +742,85 @@
                 var urlParams = new URLSearchParams(window.location.search);
                 return urlParams.get('userRole') || null;
             },
-
             validate(){
-                var me = this;
-                // if(!this.start_date || !this.end_date)
-                // {
-				// 	this.message.status = false;
-                //     this.message.content = bc_booking_i18n.no_date_select;
-                //     return false;
-                // }
-
-                var animalInput = document.querySelector('.child_id');
-                var animalId = animalInput ? Number(animalInput.value) : 0;
-
-                let selects = document.querySelectorAll('#hotel-rooms select.custom-select');
-                let hasSelectedRoom = false;
-
-                selects.forEach(function(sel){
-                    if(parseInt(sel.value) > 0){
-                        hasSelectedRoom = true;
-                    }
-                });
-
-                if (!hasSelectedRoom && animalId > 0) {
-                    $('#confirmBookingAnimalText').text("Вы бронируете только охоту, без жилья. Продолжить?");
-                    $('#confirmAnimalBooking').modal('show');
-
-                    $('#confirmBookingAnimalYes').off('click').on('click', function () {
-                        $('#confirmAnimalBooking').modal('hide');
-                        me.doSubmit(null, {skipValidate: true, type: 'animal'});
-                    });
-
-                    $('#confirmBookingAnimalNo').off('click').on('click', function() {
-                        $('#confirmAnimalBooking').modal('hide');
-                    });
-
+                if(!this.start_date || !this.end_date)
+                {
+                    this.message.status = false;
+                    this.message.content = bc_booking_i18n.no_date_select;
                     return false;
                 }
-
-                if (animalId === 0 && hasSelectedRoom) {
-                    $('#confirmSingleBookingText').text("Вы бронируете только жильё, без охоты. Продолжить?");
-                    $('#confirmSingleHotelBooking').modal('show');
-
-
-                    $('#confirmSingleBookingYes').off('click').on('click', function () {
-                        $('#confirmSingleHotelBooking').modal('hide');
-                        me.doSubmit(null, {skipValidate: true, type: 'hotel'});
-                    });
-
-                    $('#confirmSingleBookingNo').off('click').on('click', function() {
-                        $('#confirmSingleHotelBooking').modal('hide');
-                    });
-
-                    return false;
-                }
-
                 if(!this.guests )
                 {
-					this.message.status = false;
+                    this.message.status = false;
                     this.message.content = bc_booking_i18n.no_guest_select;
                     return false;
                 }
 
                 return true;
             },
+            // validate(){
+            //     var me = this;
+            //     // if(!this.start_date || !this.end_date)
+            //     // {
+			// 	// 	this.message.status = false;
+            //     //     this.message.content = bc_booking_i18n.no_date_select;
+            //     //     return false;
+            //     // }
+            //
+            //     var animalInput = document.querySelector('.child_id');
+            //     var animalId = animalInput ? Number(animalInput.value) : 0;
+            //
+            //     let selects = document.querySelectorAll('#hotel-rooms select.custom-select');
+            //     let hasSelectedRoom = false;
+            //
+            //     selects.forEach(function(sel){
+            //         if(parseInt(sel.value) > 0){
+            //             hasSelectedRoom = true;
+            //         }
+            //     });
+            //
+            //     if (!hasSelectedRoom && animalId > 0) {
+            //         $('#confirmBookingAnimalText').text("Вы бронируете только охоту, без жилья. Продолжить?");
+            //         $('#confirmAnimalBooking').modal('show');
+            //
+            //         $('#confirmBookingAnimalYes').off('click').on('click', function () {
+            //             $('#confirmAnimalBooking').modal('hide');
+            //             me.doSubmit(null, {skipValidate: true, type: 'animal'});
+            //         });
+            //
+            //         $('#confirmBookingAnimalNo').off('click').on('click', function() {
+            //             $('#confirmAnimalBooking').modal('hide');
+            //         });
+            //
+            //         return false;
+            //     }
+            //
+            //     if (animalId === 0 && hasSelectedRoom) {
+            //         $('#confirmSingleBookingText').text("Вы бронируете только жильё, без охоты. Продолжить?");
+            //         $('#confirmSingleHotelBooking').modal('show');
+            //
+            //
+            //         $('#confirmSingleBookingYes').off('click').on('click', function () {
+            //             $('#confirmSingleHotelBooking').modal('hide');
+            //             me.doSubmit(null, {skipValidate: true, type: 'hotel'});
+            //         });
+            //
+            //         $('#confirmSingleBookingNo').off('click').on('click', function() {
+            //             $('#confirmSingleHotelBooking').modal('hide');
+            //         });
+            //
+            //         return false;
+            //     }
+            //
+            //     if(!this.guests )
+            //     {
+			// 		this.message.status = false;
+            //         this.message.content = bc_booking_i18n.no_guest_select;
+            //         return false;
+            //     }
+            //
+            //     return true;
+            // },
             addPersonType(type){
                 switch (type){
                     case "adults":
@@ -1062,39 +1077,11 @@
                     }
                 });
             },
-            doSubmit:function (e, options = {}) {
-                const type = options.type || null;
-
-                if(e && e.preventDefault) e.preventDefault();
+            doSubmit:function (e) {
+                e.preventDefault();
                 if(this.onSubmit) return false;
 
-                // --- ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ ЖИВОТНОГО ---
-                // Если выбрано животное, запрещаем продолжать,
-                // пока не была выполнена проверка доступности (кнопкой «Проверить наличие»)
-                var animalId = Number(this.getSelectAnimalId() || 0);
-                if (animalId > 0 && !options.skipValidate) {
-                    if (!this.start_date_animal) {
-                        bookingCoreApp.showError('Пожалуйста, выберите дату охоты');
-                        return false;
-                    }
-                    if (!this.animalCheckPassed) {
-                        bookingCoreApp.showError('Пожалуйста, сначала проверьте доступность выбранного животного');
-                        return false;
-                    }
-                    // Если выбраны и номера, и животное - проверяем диапазон дат проживания
-                    // if (this.start_date && this.end_date) {
-                    //     var stayStart = moment(this.start_date, 'YYYY-MM-DD');
-                    //     var stayEnd = moment(this.end_date, 'YYYY-MM-DD');
-                    //     var huntDate = moment(this.start_date_animal, 'YYYY-MM-DD');
-                    //
-                    //     if (!huntDate.isBetween(stayStart, stayEnd, 'day', '(]')) {
-                    //         bookingCoreApp.showError('Дата охоты должна быть в пределах дат проживания');
-                    //         return false;
-                    //     }
-                    // }
-                }
-
-                if (!options.skipValidate && !this.validate()) return false;
+                if(!this.validate()) return false;
 
                 this.onSubmit = true;
                 var me = this;
@@ -1105,82 +1092,20 @@
                     this.html = '';
                 }
 
-                let request = null;
-
-                if (type === 'animal') {
-                    var userRole = this.getUserRoleFromUrl();
-                    request = {
-                        url: bookingCore.url + '/booking/addToCartAnimal',
-                        data: {
-                            service_id: this.getSelectAnimalId(),
-                            service_type: 'animal',
-                            type: 'animal',
-                            start_date_animal: this.start_date_animal,
-                            hunting_adults: this.hunting_adults,
-                            animal_id: this.getSelectAnimalId(),
-                            hotel_id: this.id,
-                            animal_price: this.animalPrice
-                        }
-                    };
-                    if (userRole) {
-                        request.data.userRole = userRole;
-                    }
-                }
-                else if (type === 'hotel') {
-                    var userRole = this.getUserRoleFromUrl();
-                    request = {
-                        url: bookingCore.url + '/booking/addToCart',
-                        data: {
-                            service_id: this.id,
-                            hotel_id: this.id,
-                            service_type: 'hotel',
-                            type: 'hotel',
-                            start_date: this.start_date,
-                            end_date: this.end_date,
-                            extra_price: this.extra_price,
-                            adults: this.adults,
-                            children: this.children,
-                            rooms: this.rooms.map(item =>
-                                objectPick(item, ['id', 'number_selected'])
-                            )
-                        }
-                    };
-                    if (userRole) {
-                        request.data.userRole = userRole;
-                    }
-                }
-                else {
-                    var userRole = this.getUserRoleFromUrl();
-                    request = {
-                        url: bookingCore.url + '/booking/addToCart',
-                        data: {
-                            service_id: this.id,
-                            service_type: 'hotel',
-                            type: 'hotel_animal',
-                            start_date_animal: this.start_date_animal,
-                            start_date: this.start_date,
-                            end_date: this.end_date,
-                            extra_price: this.extra_price,
-                            adults: this.adults,
-                            hunting_adults: this.hunting_adults,
-                            children: this.children,
-                            animal_id: this.getSelectAnimalId(),
-                            hotel_id: this.id,
-                            animal_price: this.animalPrice,
-                            rooms: this.rooms.map(item =>
-                                objectPick(item, ['id', 'number_selected'])
-                            )
-                        }
-                    };
-                    if (userRole) {
-                        request.data.userRole = userRole;
-                    }
-                }
-
-
                 $.ajax({
-                    url: request.url,
-                    data: request.data,
+                    url:bookingCore.url+'/booking/addToCart',
+                    data:{
+                      service_id: this.id,
+                      hotel_id: this.id,
+                      service_type: 'hotel',
+                      type: 'hotel',
+                      start_date: this.start_date,
+                      end_date: this.end_date,
+                      extra_price: this.extra_price,
+                      adults: this.adults,
+                      children: this.children,
+                      rooms: this.rooms.map(item => objectPick(item, ['id', 'number_selected']))
+                    },
                     dataType:'json',
                     type:'post',
                     success:function(res){
@@ -1200,7 +1125,6 @@
                         }
 
                         if(res.url){
-                            me.onSubmit = false;
                             window.location.href = res.url
                         }
 
@@ -1216,6 +1140,7 @@
                         }
                     },
                     error:function (e) {
+                        console.log(e);
                         me.onSubmit = false;
 
                         bc_handle_error_response(e);
@@ -1232,6 +1157,176 @@
                     }
                 })
             },
+            // doSubmit:function (e, options = {}) {
+            //     const type = options.type || null;
+            //
+            //     if(e && e.preventDefault) e.preventDefault();
+            //     if(this.onSubmit) return false;
+            //
+            //     // // --- ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА ДЛЯ ЖИВОТНОГО ---
+            //     // // Если выбрано животное, запрещаем продолжать,
+            //     // // пока не была выполнена проверка доступности (кнопкой «Проверить наличие»)
+            //     // var animalId = Number(this.getSelectAnimalId() || 0);
+            //     // if (animalId > 0 && !options.skipValidate) {
+            //     //     if (!this.start_date_animal) {
+            //     //         bookingCoreApp.showError('Пожалуйста, выберите дату охоты');
+            //     //         return false;
+            //     //     }
+            //     //     if (!this.animalCheckPassed) {
+            //     //         bookingCoreApp.showError('Пожалуйста, сначала проверьте доступность выбранного животного');
+            //     //         return false;
+            //     //     }
+            //     //     // Если выбраны и номера, и животное - проверяем диапазон дат проживания
+            //     //     // if (this.start_date && this.end_date) {
+            //     //     //     var stayStart = moment(this.start_date, 'YYYY-MM-DD');
+            //     //     //     var stayEnd = moment(this.end_date, 'YYYY-MM-DD');
+            //     //     //     var huntDate = moment(this.start_date_animal, 'YYYY-MM-DD');
+            //     //     //
+            //     //     //     if (!huntDate.isBetween(stayStart, stayEnd, 'day', '(]')) {
+            //     //     //         bookingCoreApp.showError('Дата охоты должна быть в пределах дат проживания');
+            //     //     //         return false;
+            //     //     //     }
+            //     //     // }
+            //     // }
+            //
+            //     if (!options.skipValidate && !this.validate()) return false;
+            //
+            //     this.onSubmit = true;
+            //     var me = this;
+            //
+            //     this.message.content = '';
+            //
+            //     if(this.step == 1){
+            //         this.html = '';
+            //     }
+            //
+            //     let request = null;
+            //
+            //     if (type === 'animal') {
+            //         var userRole = this.getUserRoleFromUrl();
+            //         request = {
+            //             url: bookingCore.url + '/booking/addToCartAnimal',
+            //             data: {
+            //                 service_id: this.getSelectAnimalId(),
+            //                 service_type: 'animal',
+            //                 type: 'animal',
+            //                 start_date_animal: this.start_date_animal,
+            //                 hunting_adults: this.hunting_adults,
+            //                 animal_id: this.getSelectAnimalId(),
+            //                 hotel_id: this.id,
+            //                 animal_price: this.animalPrice
+            //             }
+            //         };
+            //         if (userRole) {
+            //             request.data.userRole = userRole;
+            //         }
+            //     }
+            //     else if (type === 'hotel') {
+            //         var userRole = this.getUserRoleFromUrl();
+            //         request = {
+            //             url: bookingCore.url + '/booking/addToCart',
+            //             data: {
+            //                 service_id: this.id,
+            //                 hotel_id: this.id,
+            //                 service_type: 'hotel',
+            //                 type: 'hotel',
+            //                 start_date: this.start_date,
+            //                 end_date: this.end_date,
+            //                 extra_price: this.extra_price,
+            //                 adults: this.adults,
+            //                 children: this.children,
+            //                 rooms: this.rooms.map(item =>
+            //                     objectPick(item, ['id', 'number_selected'])
+            //                 )
+            //             }
+            //         };
+            //         if (userRole) {
+            //             request.data.userRole = userRole;
+            //         }
+            //     }
+            //     else {
+            //         var userRole = this.getUserRoleFromUrl();
+            //         request = {
+            //             url: bookingCore.url + '/booking/addToCart',
+            //             data: {
+            //                 service_id: this.id,
+            //                 service_type: 'hotel',
+            //                 type: 'hotel_animal',
+            //                 start_date_animal: this.start_date_animal,
+            //                 start_date: this.start_date,
+            //                 end_date: this.end_date,
+            //                 extra_price: this.extra_price,
+            //                 adults: this.adults,
+            //                 hunting_adults: this.hunting_adults,
+            //                 children: this.children,
+            //                 animal_id: this.getSelectAnimalId(),
+            //                 hotel_id: this.id,
+            //                 animal_price: this.animalPrice,
+            //                 rooms: this.rooms.map(item =>
+            //                     objectPick(item, ['id', 'number_selected'])
+            //                 )
+            //             }
+            //         };
+            //         if (userRole) {
+            //             request.data.userRole = userRole;
+            //         }
+            //     }
+            //
+            //
+            //     $.ajax({
+            //         url: request.url,
+            //         data: request.data,
+            //         dataType:'json',
+            //         type:'post',
+            //         success:function(res){
+            //
+            //             if(!res.status){
+            //                 me.onSubmit = false;
+            //             }
+            //             if(res.message){
+            //                 bookingCoreApp.showAjaxMessage(res);
+            //             }
+            //
+            //             if(res.step){
+            //                 me.step = res.step;
+            //             }
+            //             if(res.html){
+            //                 me.html = res.html
+            //             }
+            //
+            //             if(res.url){
+            //                 me.onSubmit = false;
+            //                 window.location.href = res.url
+            //             }
+            //
+            //             if(res.errors && typeof res.errors == 'object')
+            //             {
+            //                 var html = '';
+            //                 for(var i in res.errors){
+            //                     html += res.errors[i]+'<br>';
+            //                 }
+            //                 me.message.content = html;
+            //
+            //                 bookingCoreApp.showError(html);
+            //             }
+            //         },
+            //         error:function (e) {
+            //             me.onSubmit = false;
+            //
+            //             bc_handle_error_response(e);
+            //
+            //             if(e.status == 401){
+            //                 //$('.bc_single_book_wrap').modal('hide');
+            //             }
+            //
+            //             if(e.status != 401 && e.responseJSON){
+            //                 me.message.content = e.responseJSON.message ? e.responseJSON.message : 'Can not booking';
+            //                 me.message.type = false;
+            //
+            //             }
+            //         }
+            //     })
+            // },
             doEnquirySubmit:function(e){
                 e.preventDefault();
                 if(this.onSubmit) return false;
