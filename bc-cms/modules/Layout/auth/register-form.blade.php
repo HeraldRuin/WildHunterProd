@@ -1,3 +1,7 @@
+@php
+    $roles = \Modules\User\Models\Role::selectableRoles()->get();
+@endphp
+
 <form class="form bc-form-register" method="post" action="{{route('auth.register.store')}}">
     @csrf
     <div class="row">
@@ -19,8 +23,11 @@
     <div class="form-group">
         <select name="role" class="form-control">
             <option value="" disabled selected hidden>{{ __('Select role') }}</option>
-            <option value="hunter">{{ __('Hunter') }}</option>
-            <option value="baseadmin">{{ __('Base admin') }}</option>
+            @foreach($roles as $role)
+                <option value="{{ $role->code }}">
+                    {{ $role->name }}
+                </option>
+            @endforeach
         </select>
         <i class="input-icon field-icon icofont-caret-down"></i>
         <span class="invalid-feedback error error-role"></span>
