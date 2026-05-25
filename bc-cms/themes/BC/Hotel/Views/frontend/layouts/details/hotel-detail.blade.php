@@ -287,15 +287,14 @@
         @endif
 
         <div class="end_room_sticky"></div>
-        <div class="alert alert-warning" v-if="!firstLoad && !rooms.length">
-            {{__("No room available with your selected date. Please change your search critical")}}
+            <div v-if="hasSearched && !firstLoad && rooms.length === 0" class="alert alert-warning">
+                {{ __("No room available with your selected date. Please change your search critical") }}
+            </div>
         </div>
-    </div>
             <div class="pt-2">
                 <div v-if="total_price > 0">
                     <button type="button" class="btn btn-primary w-100"
                             @click="doSubmit($event)"
-{{--                            :class="{'disabled':onSubmit}"--}}
                             style="height: 80px; font-size: large">
                         <span>{{__("Book Now")}}</span>
                         <i v-show="onSubmit" class="fa fa-spinner fa-spin"></i>
