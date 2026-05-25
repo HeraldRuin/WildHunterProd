@@ -209,6 +209,7 @@
                 </div>
             </div>
         </div>
+{{--        Дополнительная стоимость--}}
         <div class="hotel_room_book_status" v-if="total_price">
 {{--            <div class="row row_extra_service" v-if="extra_price.length">--}}
 {{--                <div class="col-md-12">--}}
