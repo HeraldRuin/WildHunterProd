@@ -1,9 +1,6 @@
 <?php
 
-
 namespace Modules\User\Models;
-
-
 
 use App\BaseModel;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +9,9 @@ use Modules\User\Helpers\PermissionHelper;
 
 class Role extends BaseModel
 {
+    const ADMINISTRATOR_ID = 1;
+    const ADMINISTRATOR = 'administrator';
+    const GUEST = 'guest';
 
     protected $table = 'core_roles';
 
@@ -109,6 +109,11 @@ class Role extends BaseModel
 
     public static function findByName($name){
         return parent::query()->where('name',$name)->first();
+    }
+
+    public function scopeSelectableRoles($query)
+    {
+        return $query->where('code', '!=', self::ADMINISTRATOR)->where('id', '!=', self::ADMINISTRATOR_ID);
     }
 
     public function users(){
