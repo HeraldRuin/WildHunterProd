@@ -1,53 +1,47 @@
 <?php
 
-
 namespace Modules\User\Helpers;
 
-
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class PermissionHelper
 {
-    /**
-     * @var Collection
-     */
-    protected static $all = [];
+    private const CACHE_KEY = 'permissions.all';
+    private const CACHE_TTL = 604800; // 7 дней
 
-    protected static $is_initial = false;
-
-    public static function add($permission){
-        if(!static::$is_initial){
-            static::load();
+    public static function add($permissions): void
+    {
+        if (!is_array($permissions)) {
+            $permissions = [$permissions];
         }
-        $permissions = $permission;
-        if(!is_array($permission)) $permissions = [$permission];
 
-        foreach ($permissions as $p){
-            if(!in_array($p,static::$all)){
-                static::$all[] = $p;
+        $all = self::all();
+
+        foreach ($permissions as $permission) {
+            if (!in_array($permission, $all, true)) {
+                $all[] = $permission;
             }
         }
+
+        Cache::put(self::CACHE_KEY, $all, self::CACHE_TTL);
     }
 
-    public static function all(){
-
-        if(!static::$is_initial){
-            static::load();
-        }
-        return static::$all;
+    public static function all(): array
+    {
+        return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
+            return config('permissions', []);
+        });
     }
 
-    public static function find($permission){
-
-        if(!static::$is_initial){
-            static::load();
-        }
-
-        return in_array($permission,static::$all);
+    public static function find(string $permission): bool
+    {
+        return in_array($permission, self::all(), true);
     }
 
-    protected static function load(){
-        static::$all = config('permissions');
-        static::$is_initial = true;
+    public static function refresh(): array
+    {
+        Cache::forget(self::CACHE_KEY);
+
+        return self::all();
     }
 }
