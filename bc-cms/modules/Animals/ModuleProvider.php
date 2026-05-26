@@ -20,12 +20,12 @@ class ModuleProvider extends ModuleServiceProvider
 
         PermissionHelper::add([
             // animal
-            'animal_view',
-            'animal_create',
-            'animal_update',
-            'animal_delete',
-            'animal_manage_others',
-            'animal_manage_attributes',
+//            'animal_view',
+//            'animal_create',
+//            'animal_update',
+//            'animal_delete',
+//            'animal_manage_others',
+//            'animal_manage_attributes',
         ]);
     }
     /**
