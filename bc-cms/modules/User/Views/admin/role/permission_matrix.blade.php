@@ -24,27 +24,31 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($permissions_group as $gName=>$permissions)
-                                        <tr class="">
-                                            <td>
-                                                <strong>{{ucfirst($gName)}}</strong>
+                                    @foreach($permissions_group as $group => $items)
+
+                                        <tr>
+                                            <td colspan="{{ count($roles) + 1 }}">
+                                                <strong>{{ $group }}</strong>
                                             </td>
-                                            @foreach($roles as $role)
-                                                <td></td>
-                                            @endforeach
                                         </tr>
-                                        @if(!empty($permissions))
-                                            @foreach($permissions as $permission)
-                                                <tr>
-                                                    <td>{{$permission}}</td>
-                                                    @foreach($roles as $role)
-                                                        <td>
-                                                            <input type="checkbox" @if(in_array($permission,$selectedIds[$role->id])) checked @endif name="matrix[{{$role->id}}][]" value="{{$permission}}">
-                                                        </td>
-                                                    @endforeach
-                                                </tr>
-                                            @endforeach
-                                        @endif
+
+                                        @foreach($items as $item)
+                                            <tr>
+                                                <td>{{ $item['label'] }}</td>
+
+                                                @foreach($roles as $role)
+                                                    <td>
+                                                        <input type="checkbox"
+                                                               @if(in_array($item['key'], $selectedIds[$role->id]))
+                                                                   checked
+                                                               @endif
+                                                               name="matrix[{{$role->id}}][]"
+                                                               value="{{ $item['key'] }}">
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+
                                     @endforeach
                                     </tbody>
                                 </table>
