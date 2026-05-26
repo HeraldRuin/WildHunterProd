@@ -264,22 +264,38 @@ class RoleController extends AdminController
         $this->checkPermission('role_manage');
 
         $permissions = PermissionHelper::all();
+
         $permissions_group = [
             'other' => []
         ];
         if (!empty($permissions)) {
             foreach ($permissions as $permission) {
-                $sCheck = strpos($permission, '_');
-                if ($sCheck == false) {
-                    $permissions_group['other'][] = $permission;
+
+                $pos = strpos($permission, '_');
+
+                if ($pos === false) {
+                    $permissions_group['other'][] = [
+                        'key' => $permission,
+                        'label' => __('permission.permissions.' . $permission),
+                    ];
                     continue;
                 }
-                $grName = substr($permission, 0, $sCheck);
-                if (!isset($permissions_group[$grName]))
-                    $permissions_group[$grName] = [];
-                $permissions_group[$grName][] = $permission;
+
+                $group = substr($permission, 0, $pos);
+
+                $groupName = __('permission.names.' . $group);
+
+                if (!isset($permissions_group[$groupName])) {
+                    $permissions_group[$groupName] = [];
+                }
+
+                $permissions_group[$groupName][] = [
+                    'key' => $permission,
+                    'label' => __('permission.permissions.' . $permission),
+                ];
             }
         }
+
         if (empty($permissions_group['other'])) {
             unset($permissions_group['other']);
         }
