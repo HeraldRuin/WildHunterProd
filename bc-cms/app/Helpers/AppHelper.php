@@ -963,14 +963,14 @@ function is_vendor()
 {
     if (!auth()->check()) return false;
     if(!auth()->user()->hasRole('guest')) return false;
-    if (auth()->user()->hasPermission('dashboard_guest_access')) return true;
+    if (auth()->user()->hasPermission('dashboard_access')) return true;
     return false;
 }
 function is_baseAdmin()
 {
     if (!auth()->check()) return false;
     if(!auth()->user()->hasRole('baseadmin')) return false;
-    if (auth()->user()->hasPermission('dashboard_baseAdmin_access')) return true;
+    if (auth()->user()->hasPermission('dashboard_access')) return true;
     return false;
 }
 
