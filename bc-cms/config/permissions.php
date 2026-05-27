@@ -64,6 +64,7 @@ return [
 
     // Settings SuperAdmin
     'setting_view',
+    'setting_update',
 
     // Menus
     'menu_view',

@@ -79,6 +79,7 @@ return [
         'settings_manage_attributes' => 'Управление параметрами настроек',
 
         'setting_view' => 'Просмотр настроек',
+        'setting_update' => 'Управление настройками',
 
         'menu_view' => 'Просмотр меню',
         'menu_create' => 'Создание меню',
