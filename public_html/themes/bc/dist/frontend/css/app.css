@@ -5776,7 +5776,7 @@ body .daterangepicker .full-book-event:before {
 
 .bc_wrap .page-template-content .bc-form-search-all .text-heading {
     font-weight: 500;
-    font-size: 54px;
+    /*font-size: 54px;*/
     color: #fff
 }
 
