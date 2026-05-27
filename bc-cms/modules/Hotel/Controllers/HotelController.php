@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Hotel\Controllers;
 
 use App\Http\Controllers\Controller;
@@ -9,10 +10,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Animals\Models\Animal;
+use Modules\Hotel\DTO\CheckAvailabilityData;
 use Modules\Hotel\Models\Hotel;
 use Illuminate\Http\Request;
 use Modules\Hotel\Models\HotelRoomBooking;
 use Modules\Hotel\Models\HotelRoomDate;
+use Modules\Hotel\Requests\CheckAvailabilityRequest;
 use Modules\Hotel\Services\RoomAvailabilityService;
 use Modules\Location\Models\Location;
 use Modules\Location\Models\LocationCategory;
@@ -347,9 +350,10 @@ class HotelController extends Controller
         return view('Hotel::frontend.detail', $data);
     }
 
-    public function checkAvailability(): JsonResponse
+    public function checkAvailability(CheckAvailabilityRequest $request): JsonResponse
     {
-        $result = $this->roomAvailabilityService->checkAvailability(request()->input());
+        $dto = CheckAvailabilityData::fromRequest($request);
+        $result = $this->roomAvailabilityService->checkAvailability($dto);
 
         return new SuccessResponse(data: $result['data']);
     }
