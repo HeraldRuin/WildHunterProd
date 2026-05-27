@@ -12,7 +12,7 @@ $menus = [
         'url' => route("vendor.dashboard"),
         'title' => __("Dashboard"),
         'icon' => 'fa fa-home',
-        'permission' => 'dashboard_vendor_access',
+        'permission' => 'dashboard_baseAdmin_access',
         'position' => 10
     ],
     'booking-history' => [
