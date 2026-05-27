@@ -24,6 +24,9 @@ return [
         'theme' => 'Оформление и темы',
         'popup' => 'Всплывающие окна',
         'hotel' => 'Отели',
+        'plugin' => 'Плагины',
+        'social' => 'Соц сети/Форумы',
+        'vendor' => 'Выплаты',
     ],
     'permissions' => [
         'report_view' => 'Просмотр отчетов и жалоб',
@@ -69,8 +72,9 @@ return [
         'dashboard_baseAdmin_access' => 'Доступ к панели администратора',
         'dashboard_guest_access' => 'Доступ к панели гостя',
 
-        'settings_update' => 'Редактирование настроек',
         'settings_view' => 'Просмотр настроек',
+        'settings_update' => 'Редактирование настроек',
+        'settings_create' => 'Создание настроек',
         'settings_delete' => 'Удаление настроек',
         'settings_manage_others' => 'Управление чужими настройками',
         'settings_manage_attributes' => 'Управление параметрами настроек',
