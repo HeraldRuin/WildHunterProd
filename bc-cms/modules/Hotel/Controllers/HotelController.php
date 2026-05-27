@@ -299,7 +299,15 @@ class HotelController extends Controller
 
     public function detail(Request $request, $slug)
     {
-        $row = $this->hotelClass::where('slug', $slug)->with(['location','translation','hasWishList'])->first();
+        $query = $this->hotelClass::with(['location','translation','hasWishList'])
+            ->where('slug', $slug);
+
+        if (request()->boolean('recovery')) {
+            $query->withTrashed();
+        }
+
+        $row = $query->first();
+
         $hotelId = $row->id;
         if ( empty($row) or !$row->hasPermissionDetailView()) {
             return redirect('/');

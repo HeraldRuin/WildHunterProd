@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\URL;
                 </div>
             @endif
             <div class="thumb-image">
-                <a href="{{$row->getDetailUrl()}}" target="_blank">
+                <a href="{{$row->getDetailUrl() . '?' . Arr::query(['recovery' => 1]) }}" target="_blank">
                     @if($row->image_url)
                         <img src="{{$row->image_url}}" class="img-responsive" alt="">
                     @endif
@@ -52,35 +52,45 @@ use Illuminate\Support\Facades\URL;
             <div class="control-action">
                 @if(!empty($recovery))
                     <a
-                            href="{{  Url::signedRoute("hotel.vendor.restore",[$row->id]) }}"
-                            class="btn btn-recovery btn-primary"
-                            data-confirm="{{__('"Do you want to recovery?"')}}"
-                    >{{__("Recovery")}}</a>
+                       href="{{  Url::signedRoute("hotel.vendor.restore",[$row->id]) }}"
+                       class="btn btn-recovery btn-primary"
+                       data-confirm="{{__('"Do you want to recovery?"')}}">
+                        {{__("Recovery")}}
+                    </a>
+
                     @if(Auth::user()->hasPermission('hotel_delete'))
                         <a
-                                href="{{  Url::signedRoute("hotel.vendor.delete",['id'=>$row->id,'permanently_delete'=>1]) }}"
-                                class="btn btn-danger"
-                                data-confirm="{{__('"Do you want to permanently delete?"')}}"
-                        >{{__("Del")}}</a>
+                            href="{{  Url::signedRoute("hotel.vendor.delete",['id'=>$row->id,'permanently_delete'=>1]) }}"
+                            class="btn btn-danger"
+                            data-confirm="{{__('"Do you want to permanently delete?"')}}">
+                            {{__("Del")}}
+                        </a>
                     @endif
                 @else
                     <a href="{{ route("hotel.vendor.room.availability.index",[$row->id,'user' => $user->id,'viewAdminCabinet' => $viewAdminCabinet]) }}" class="btn btn-info">{{__("Availability Rooms")}}</a>
                     @if(Auth::user()->hasPermission('hotel_update'))
 
-                        <a href="{{ route("hotel.vendor.edit",[$row->id,'user' => $user->id,'viewAdminCabinet' => $viewAdminCabinet]) }}" class="btn btn-warning">{{__("Edit")}}</a>
+                        <a
+                            href="{{ route("hotel.vendor.edit",[$row->id,'user' => $user->id,'viewAdminCabinet' => $viewAdminCabinet]) }}"
+                            class="btn btn-warning">
+                            {{__("Edit")}}
+                        </a>
                     @endif
                     @if(Auth::user()->hasPermission('hotel_create'))
                         <a
-                                href="{{ Url::signedRoute("hotel.vendor.bulk_edit",[$row->id,'action' => "clone",'user' => $user->id, 'viewAdminCabinet' => $viewAdminCabinet]) }}" class="btn btn-info"
-                        >{{__("Clone")}}</a>
+                            href="{{ Url::signedRoute("hotel.vendor.bulk_edit",[$row->id,'action' => "clone",'user' => $user->id, 'viewAdminCabinet' => $viewAdminCabinet]) }}"
+                            class="btn btn-info">
+                            {{__("Clone")}}
+                        </a>
                     @endif
 
                     @if(Auth::user()->hasPermission('hotel_delete'))
                         <a
-                                href="{{ Url::signedRoute("hotel.vendor.delete",[$row->id,'user' => $user->id, 'viewAdminCabinet' => $viewAdminCabinet]) }}"
-                                class="btn btn-danger"
-                                data-confirm="{{__('"Do you want to delete?"')}}"
-                        >{{__("Del")}}</a>
+                           href="{{ Url::signedRoute("hotel.vendor.delete",[$row->id,'user' => $user->id, 'viewAdminCabinet' => $viewAdminCabinet]) }}"
+                           class="btn btn-danger"
+                           data-confirm="{{__('"Do you want to delete?"')}}">
+                            {{__("Del")}}
+                        </a>
                     @endif
 {{--                    @if($row->status == 'publish')--}}
 {{--                        <a--}}
