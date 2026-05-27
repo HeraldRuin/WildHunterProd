@@ -68,9 +68,7 @@ return [
         'permission_update' => 'Редактирование прав доступа',
         'permission_delete' => 'Удаление прав доступа',
 
-        'dashboard_access' => 'Доступ к панели суперпользователя',
-        'dashboard_baseAdmin_access' => 'Доступ к панели администратора',
-        'dashboard_guest_access' => 'Доступ к панели гостя',
+        'dashboard_access' => 'Доступ к панели мониторинга',
 
         'settings_view' => 'Просмотр настроек',
         'settings_update' => 'Редактирование настроек',

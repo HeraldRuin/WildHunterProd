@@ -53,8 +53,6 @@ return [
 
     // Dashboard
     'dashboard_access',
-    'dashboard_baseAdmin_access',
-    'dashboard_guest_access',
 
     // Settings
     'settings_update',
