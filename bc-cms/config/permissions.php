@@ -119,11 +119,4 @@ return [
     'popup_update',
     'popup_delete',
 
-    //Attendance
-//    'attendance_view',
-//    'attendance_create',
-//    'attendance_update',
-//    'attendance_delete',
-//    'attendance_manage_others',
-//    'attendance_manage_attributes',
 ];

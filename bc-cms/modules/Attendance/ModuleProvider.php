@@ -19,12 +19,12 @@ class ModuleProvider extends ModuleServiceProvider
 
         PermissionHelper::add([
             // attendance
-            'attendance_view',
-            'attendance_create',
-            'attendance_update',
-            'attendance_delete',
-            'attendance_manage_others',
-            'attendance_manage_attributes',
+//            'attendance_view',
+//            'attendance_create',
+//            'attendance_update',
+//            'attendance_delete',
+//            'attendance_manage_others',
+//            'attendance_manage_attributes',
         ]);
     }
     /**
@@ -66,32 +66,32 @@ class ModuleProvider extends ModuleServiceProvider
     public static function getUserMenu()
     {
         $res = [];
-        if(Attendance::isEnable()){
-            $res['attendance'] = [
-                'url'   => route('animal.vendor.organisation'),
-                'title'      => __("Manage Attendances"),
-                'icon'       => Attendance::getServiceIconFeatured(),
-                'position'   => 30,
-                'permission' => 'attendance_view',
-                'children' => [
-                    'organisation'=>[
-                        'url'        => route('animal.vendor.organisation'),
-                        'title'      => __("Hunting organization"),
-                        'permission' => 'attendance_create',
-                    ],
-                    'trophy_cost'=>[
-                        'url'        => route('animal.vendor.trophy_cost'),
-                        'title'      => __("Trophy and Fines"),
-                        'permission' => 'attendance_create',
-                    ],
-                    'additional_services'=>[
-                        'url'        => route('additionals.index'),
-                        'title'      => __("Additional services"),
-                        'permission' => 'attendance_create',
-                    ],
-                ]
-            ];
-        }
+//        if(Attendance::isEnable()){
+//            $res['attendance'] = [
+//                'url'   => route('animal.vendor.organisation'),
+//                'title'      => __("Manage Attendances"),
+//                'icon'       => Attendance::getServiceIconFeatured(),
+//                'position'   => 30,
+//                'permission' => 'attendance_view',
+//                'children' => [
+//                    'organisation'=>[
+//                        'url'        => route('animal.vendor.organisation'),
+//                        'title'      => __("Hunting organization"),
+//                        'permission' => 'attendance_create',
+//                    ],
+//                    'trophy_cost'=>[
+//                        'url'        => route('animal.vendor.trophy_cost'),
+//                        'title'      => __("Trophy and Fines"),
+//                        'permission' => 'attendance_create',
+//                    ],
+//                    'additional_services'=>[
+//                        'url'        => route('additionals.index'),
+//                        'title'      => __("Additional services"),
+//                        'permission' => 'attendance_create',
+//                    ],
+//                ]
+//            ];
+//        }
         return $res;
     }
 }
