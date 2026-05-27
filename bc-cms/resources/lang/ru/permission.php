@@ -125,6 +125,7 @@ return [
         'hotel_create' => 'Создание отелей',
         'hotel_update' => 'Редактирование отелей',
         'hotel_delete' => 'Удаление отелей',
+        'hotel_recovery' => 'Восстановление отелей',
         'hotel_manage_others' => 'Управление чужими отелями',
         'hotel_manage_attributes' => 'Управление атрибутами отелей',
     ]

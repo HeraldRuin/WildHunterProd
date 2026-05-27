@@ -22,6 +22,7 @@ class ModuleProvider extends ModuleServiceProvider
             'hotel_create',
             'hotel_update',
             'hotel_delete',
+            'hotel_recovery',
             'hotel_manage_others',
             'hotel_manage_attributes',
         ]);
@@ -71,7 +72,7 @@ class ModuleProvider extends ModuleServiceProvider
                     'recovery'=>[
                         'url'        => route('hotel.admin.recovery'),
                         'title'      => __('Recovery'),
-                        'permission' => 'hotel_view',
+                        'permission' => 'hotel_recovery',
                     ],
                 ]
             ]
@@ -123,7 +124,7 @@ class ModuleProvider extends ModuleServiceProvider
                     [
                         'url'   => route('hotel.vendor.recovery'),
                         'title'      => __("Recovery"),
-                        'permission' => 'hotel_create',
+                        'permission' => 'hotel_recovery',
                     ],
                 ]
             ];

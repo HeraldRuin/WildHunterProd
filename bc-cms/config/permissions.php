@@ -55,8 +55,8 @@ return [
     'dashboard_access',
 
     // Settings
-    'settings_update',
     'settings_view',
+    'settings_create',
     'settings_update',
     'settings_delete',
     'settings_manage_others',

@@ -76,7 +76,7 @@ class VendorController extends FrontendController
 
         $data = array_merge($cabinetData, [
             'rows' => $list_hotel->paginate(5),
-            'breadcrumbs'        => [
+            'breadcrumbs' => [
                 [
                     'name' => __('Manage Hotels'),
                     'url'  => route('hotel.vendor.index')
@@ -86,7 +86,7 @@ class VendorController extends FrontendController
                     'class' => 'active'
                 ],
             ],
-            'page_title'         => __("Manage Hotels"),
+            'page_title' => __("Manage Hotels"),
         ]);
 
         return view('Hotel::frontend.vendorHotel.index', $data);
@@ -94,11 +94,12 @@ class VendorController extends FrontendController
 
     public function recovery(Request $request)
     {
-        $this->checkPermission('hotel_view');
+        $this->checkPermission('hotel_recovery');
+        $cabinetData = $this->cabinetService->getCabinetData();
 
         $list_hotel = $this->hotelClass::onlyTrashed()->where("author_id", Auth::id())->orderBy('id', 'desc');
 
-        $data = [
+        $data = array_merge($cabinetData, [
             'rows' => $list_hotel->paginate(5),
             'recovery'           => 1,
             'breadcrumbs'        => [
@@ -112,7 +113,8 @@ class VendorController extends FrontendController
                 ],
             ],
             'page_title'         => __("Recovery Hotels"),
-        ];
+        ]);
+
         return view('Hotel::frontend.vendorHotel.index', $data);
     }
 
