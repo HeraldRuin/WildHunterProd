@@ -54,13 +54,16 @@ return [
     // Dashboard
     'dashboard_access',
 
-    // Settings
+    // Settings User
     'settings_view',
     'settings_create',
     'settings_update',
     'settings_delete',
     'settings_manage_others',
     'settings_manage_attributes',
+
+    // Settings SuperAdmin
+    'setting_view',
 
     // Menus
     'menu_view',

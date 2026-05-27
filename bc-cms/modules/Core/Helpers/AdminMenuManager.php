@@ -56,7 +56,7 @@ class AdminMenuManager
                 'url'        => route('core.admin.settings.index', ['group' => 'general']),
                 'title'      => __('Setting'),
                 'icon'       => 'icon ion-ios-cog',
-                'permission' => 'setting_update',
+                'permission' => 'setting_view',
                 'group'      => 'system',
                 'children'   => \Modules\Core\Models\Settings::getSettingPages(true)
             ],
