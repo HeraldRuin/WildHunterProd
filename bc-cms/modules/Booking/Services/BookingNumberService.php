@@ -16,13 +16,16 @@ class BookingNumberService
                 ->first();
 
             if (!$counter) {
-                throw new \Exception("Counter for hotel {$hotelId} not found");
+
+                $counter = BookingCounter::create([
+                    'hotel_id' => $hotelId,
+                    'last_number' => 0,
+                ]);
             }
 
             $counter->increment('last_number');
 
-            return $counter->last_number;
-
+            return $counter->fresh()->last_number;
         });
     }
 }
