@@ -24,7 +24,6 @@ use Modules\User\Emails\UserPermanentlyDelete;
 use Modules\User\Events\UpdatePlanRequest;
 use Modules\User\Models\Plan;
 use Modules\User\Models\UserPlan;
-use Modules\User\Models\UserWeapon;
 use Modules\User\Traits\HasWallet;
 use Modules\Vendor\Models\VendorPayout;
 use Modules\Vendor\Models\VendorRequest;
@@ -36,8 +35,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\HasUserReview;
 use App\Traits\HasStatus;
 use App\Traits\HasAddress;
-use Modules\Weapon\Models\Caliber;
-use Modules\Weapon\Models\WeaponType;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -566,18 +563,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hotels(): HasMany
     {
         return $this->hasMany(Hotel::class, 'admin_base');
-    }
-
-    public function weaponType(): BelongsTo
-    {
-        return $this->belongsTo(WeaponType::class, 'weapon_type_id');
-    }
-    public function caliber(): BelongsTo
-    {
-        return $this->belongsTo(Caliber::class, 'caliber_id');
-    }
-    public function weapons(): HasMany
-    {
-        return $this->hasMany(UserWeapon::class);
     }
 }

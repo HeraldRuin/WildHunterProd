@@ -150,8 +150,6 @@
         };
     </script>
     <script src="{{ asset('module/booking/js/echo-setup.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('module/animal/js/single-animal.js?_ver=' . config('app.asset_version')) }}"></script>
-    <script type="text/javascript" src="{{ asset('module/weapon/js/weapon.js?_ver=' . config('app.asset_version')) }}"></script>
     <script type="text/javascript" src="{{ asset('module/booking/js/booking_history.js?_ver=' . config('app.asset_version')) }}"></script>
     <script type="text/javascript" src="{{ asset('module/booking/js/add_services.js?_ver=' . config('app.asset_version')) }}"></script>
     <script type="text/javascript" src="{{ asset('module/booking/js/invitation.js?_ver=' . config('app.asset_version')) }}"></script>
