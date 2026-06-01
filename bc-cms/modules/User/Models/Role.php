@@ -9,9 +9,10 @@ use Modules\User\Helpers\PermissionHelper;
 
 class Role extends BaseModel
 {
-    const ADMINISTRATOR_ID = 1;
-    const ADMINISTRATOR = 'administrator';
-    const GUEST = 'guest';
+    const SUPERADMIN_ID = 1;
+    const SUPERADMIN = 'superadmin';
+    const ADMIN = 'admin';
+    const CUSTOMER = 'customer';
 
     protected $table = 'core_roles';
 
@@ -113,7 +114,7 @@ class Role extends BaseModel
 
     public function scopeSelectableRoles($query)
     {
-        return $query->where('code', '!=', self::ADMINISTRATOR)->where('id', '!=', self::ADMINISTRATOR_ID);
+        return $query->where('code', '!=', self::SUPERADMIN)->where('id', '!=', self::SUPERADMIN_ID);
     }
 
     public function users(){

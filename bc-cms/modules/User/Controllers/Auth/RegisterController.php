@@ -1,6 +1,5 @@
 <?php
 
-
 	namespace Modules\User\Controllers\Auth;
 
 
@@ -13,9 +12,11 @@
     use Illuminate\Support\Facades\Log;
     use Illuminate\Support\Facades\Validator;
     use Illuminate\Support\MessageBag;
+    use Illuminate\Validation\Rule;
     use Illuminate\Validation\Rules\Password;
     use Matrix\Exception;
     use Modules\User\Events\SendMailUserRegistered;
+    use Modules\User\Models\Role;
 
     class RegisterController extends \App\Http\Controllers\Auth\RegisterController
 	{
@@ -28,11 +29,9 @@
             $rules = [
                 'first_name' => ['required','string','max:255'],
                 'last_name'  => ['required','string','max:255'],
-                'role'  => ['required','in:guest,baseadmin'],
+                'role' => ['required', Rule::in([Role::CUSTOMER, Role::ADMIN])],
                 'email'      => ['required','string','email','max:255','unique:users'],
-                'password'   => [
-                    'required',
-                    'string',
+                'password'   => ['required', 'string',
                     Password::min(8)->uncompromised(),
                     function ($attribute, $value, $fail) {
 
