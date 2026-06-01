@@ -32,27 +32,28 @@ class ModuleProvider extends ModuleServiceProvider
     public static function getUserMenu()
     {
         $res = [];
+
         if(Settings::isEnable()){
             $res['settings'] = [
-                'url'   => route('settings.vendor.collection-timer'),
+                'url'   => route(''),
                 'title'      => __("Settings"),
                 'icon'       => 'icofont-settings',
                 'position'   => 70,
                 'permission' => 'settings_view',
                 'children' => [
-                    'timer_collection'=>[
-                        'url'        => route('settings.vendor.collection-timer'),
-                        'title'      => __("Time collection"),
+                    ''=>[
+                        'url'        => route(''),
+                        'title'      => __(""),
                         'permission' => 'settings_view',
                     ],
-                    'timer_beds'=>[
-                        'url'        => route('settings.vendor.beds-timer'),
-                        'title'      => __("Time beds"),
+                    ''=>[
+                        'url'        => route(''),
+                        'title'      => __(""),
                         'permission' => 'settings_view',
                     ],
-                    'timer_paid'=>[
-                        'url'        => route('settings.vendor.paid-timer'),
-                        'title'      => __("Time paid"),
+                    ''=>[
+                        'url'        => route(''),
+                        'title'      => __(""),
                         'permission' => 'settings_view',
                     ],
                 ]
