@@ -31,7 +31,7 @@
     <td class="type a-hidden">{{ $booking->typeText }}</td>
 
     <td class="a-hidden">
-        @if($booking->type === 'hotel')
+        @if($booking->type === 'hotel' && $userRole === \Modules\User\Models\Role::ADMIN)
             <strong>Проживание:</strong>
             <div>
                 {{__("CheckIn")}} : {{display_date($booking->start_date)}} <br>

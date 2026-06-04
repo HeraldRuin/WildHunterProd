@@ -33,7 +33,7 @@
     <td class="type a-hidden">{{ $booking->typeText }}</td>
 
     <td class="a-hidden">
-        @if($booking->type === 'hotel' && $userRole === 'hunter')
+        @if($booking->type === 'hotel' && $userRole === \Modules\User\Models\Role::CUSTOMER)
             <strong>Проживание:</strong>
             <div>
                 {{__("CheckIn")}} : {{display_date($booking->start_date)}} <br>
@@ -65,53 +65,6 @@
                     @endforeach">
                     Подробности
                 </button>
-            </div>
-        @endif
-        @if($booking->type === 'hotel_animal')
-            <strong>Проживание:</strong>
-            <div>
-                {{__("CheckIn")}} : {{display_date($booking->start_date)}} <br>
-                {{__("Exit")}} : {{display_date($booking->end_date)}} <br>
-                {{__("Duration")}} :
-                @if($booking->duration_days <= 1)
-                    {{__(':count nights',['count'=>$booking->duration_days])}} <br>
-                @else
-                    {{__(':count nights',['count'=>$booking->duration_days])}} <br>
-                @endif
-
-                {{__(':total guest',['count'=>$booking->total_guests])}} <br>
-                <button
-                    type="button"
-                    class="btn btn-info btn-sm details-btn mt-2"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="click"
-                    data-bs-html="true"
-                    data-bs-placement="right"
-                    data-bs-custom-class="popover-width"
-                    data-bs-content="
-                    {{ __(':count rooms', ['count' => $booking->roomsBooking->count()]) }}<br>
-
-                     @foreach($booking->roomsBooking as $bookingRoom)
-                        {{ $bookingRoom->room?->title ?? '—' }},
-                        <span>вместимость = </span> {{ $bookingRoom->room?->adults ?? '—' }};
-                        <span>кол-во = </span> {{ $bookingRoom->number ?? '—' }};
-                        <span>цена = </span> {{ round($bookingRoom->room?->price) ?? '—' }} р/сут
-                        <br>
-                    @endforeach">
-                    Подробности
-                </button>
-            </div>
-            <strong>Охота:</strong>
-            <div>
-                {{__("Hunting Date")}} : {{display_date($booking->start_date_animal)}} <br>
-                {{ __("Animals") }}:
-                @if($booking->animal && $booking->animal->title)
-                    {{ $booking->animal->title }}
-                @else
-                    <span style="color: red;">Удалено админом</span>
-                @endif
-                <br>
-                {{__(':total guest',['count'=>$booking->total_hunting])}} <br>
             </div>
         @endif
     </td>
