@@ -17,7 +17,7 @@
             <ul class="nav nav-tabs ht-nav-tabs">
                 <?php $status_type = Request::query('status'); ?>
                 <li class="@if(empty($status_type)) active @endif">
-                    @if($userRole === 'baseadmin')
+                    @if($userRole === \Modules\User\Models\Role::ADMIN)
                         <a href="{{route("user.booking_history")}}">{{__("All Bookings History")}}</a>
                     @else
                         <a href="{{route("user.booking_history")}}">{{__("My Bookings History")}}</a>
@@ -29,7 +29,7 @@
                             <a href="{{route("user.booking_history",['status'=>$status])}}">{{booking_status_to_text($status)}}</a>
                         </li>
                     @endforeach
-                        @if($userRole === 'baseadmin')
+                        @if($userRole === \Modules\User\Models\Role::ADMIN)
                             <select class="form-select form-select-sm"
                                     style="width: 270px;"
                                     onchange="if (this.value) window.location.href = this.value">
@@ -77,7 +77,7 @@
                     <div class="table-responsive table-width">
                         <table class="table table-bordered  table-booking-history">
                             <thead>
-                            @if($userRole === 'baseadmin')
+                            @if($userRole === 'admin')
                             <tr>
                                 <th class="number-booking">{{__("Number Booking")}}</th>
                                 <th class="data-booking">{{__("Date Booking")}}</th>
