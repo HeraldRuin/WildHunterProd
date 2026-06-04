@@ -87,6 +87,7 @@
     </script>
     <link href="{{ asset('dist/frontend/module/user/css/user.css?_ver=' . config('app.asset_version')) }}" rel="stylesheet">
     <link href="{{ asset('dist/frontend/module/user/css/dashboard.css?_ver=' . config('app.asset_version')) }}" rel="stylesheet">
+    <link href="{{ asset('dist/frontend/module/booking/css/bookingHistory.css?_ver=' . config('app.asset_version')) }}" rel="stylesheet">
     <!-- Styles -->
     @stack('css')
     <style type="text/css">

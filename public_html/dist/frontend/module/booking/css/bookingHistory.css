@@ -1,0 +1,36 @@
+.table-width {
+    max-width: 90% !important;
+}
+.number-booking {
+    width: 1%;
+}
+.data-booking {
+    width: 1%;
+}
+.client-booking {
+    width: 4%;
+}
+.hotel-booking {
+    width: 4%;
+}
+.type-booking {
+    width: 1%;
+}
+.detail-booking {
+    width: 4%;
+}
+.status-booking {
+    width: 5%;
+}
+.amount-booking {
+    width: 1%;
+}
+.paid-booking {
+    width: 7%;
+}
+.remnant-booking {
+    width: 2%;
+}
+.event-booking {
+    width: 9%;
+}
