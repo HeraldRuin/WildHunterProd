@@ -30,7 +30,7 @@
                         </li>
                     @endforeach
                         @if($userRole === \Modules\User\Models\Role::ADMIN)
-                            <select class="form-select form-select-sm"
+                            <select class="form-select form-select-sm bg-white text-dark"
                                     style="width: 270px;"
                                     onchange="if (this.value) window.location.href = this.value">
 
