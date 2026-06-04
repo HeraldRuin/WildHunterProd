@@ -46,34 +46,6 @@
                 {{__(':total guest',['count'=>$booking->total_guests])}} <br>
             </div>
         @endif
-        @if($booking->type === 'hotel_animal')
-            <strong>Проживание:</strong>
-            <div>
-                {{__("CheckIn")}} : {{display_date($booking->start_date)}} <br>
-                {{__("Exit")}} : {{display_date($booking->end_date)}} <br>
-                {{__("Duration")}} :
-                @if($booking->duration_days <= 1)
-                    {{__(':count nights',['count'=>$booking->duration_days])}} <br>
-                @else
-                    {{__(':count nights',['count'=>$booking->duration_days])}} <br>
-                @endif
-
-                {{__(':total guest',['count'=>$booking->total_guests])}} <br>
-            </div>
-            <strong>Охота:</strong>
-            <div>
-                {{__("Hunting Date")}} : {{display_date($booking->start_date_animal)}} <br>
-                {{ __("Animals") }}:
-                @if($booking->animal && $booking->animal->title)
-                    {{ $booking->animal->title }}
-                @else
-                    <span style="color: red;">Удалено админом</span>
-                @endif
-                <br>
-                {{__(':total guest',['count'=>$booking->total_hunting])}} <br>
-
-            </div>
-        @endif
     </td>
     <td class="{{$booking->status}} a-hidden">
         <div>
@@ -200,7 +172,7 @@
     </td>
 
     <td>
-        @if($userRole === 'baseadmin' && $booking->status === \Modules\Booking\Models\Booking::PROCESSING)
+        @if($userRole === \Modules\User\Models\Role::ADMIN && $booking->status === \Modules\Booking\Models\Booking::PROCESSING)
             <button
                 type="button"
                 class="btn btn-success btn-sm mt-2"
@@ -218,7 +190,7 @@
             </button>
         @endif
 
-        @if($userRole === 'baseadmin' && in_array($booking->status, [ \Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED, \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::START_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
+        @if($userRole === \Modules\User\Models\Role::ADMIN && in_array($booking->status, [ \Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED, \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::START_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
             <button
                 type="button"
                 class="btn btn-danger btn-sm mt-2"
@@ -227,7 +199,7 @@
             </button>
         @endif
 
-        @if($userRole === 'baseadmin' && in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
+        @if($userRole === \Modules\User\Models\Role::ADMIN && in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
             <button
                 type="button"
                 class="btn btn-primary btn-sm mt-2"
@@ -237,7 +209,7 @@
             </button>
         @endif
 
-        @if($userRole === 'baseadmin' && in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED, \Modules\Booking\Models\Booking::PAID, \Modules\Booking\Models\Booking::COMPLETED]))
+        @if($userRole === \Modules\User\Models\Role::ADMIN && in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED, \Modules\Booking\Models\Booking::PAID, \Modules\Booking\Models\Booking::COMPLETED]))
             <button
                 type="button"
                 class="btn btn-primary btn-sm mt-2"
@@ -246,7 +218,7 @@
             </button>
         @endif
 
-        @if($userRole === 'baseadmin' && $booking->status === \Modules\Booking\Models\Booking::FINISHED_BED)
+        @if($userRole === \Modules\User\Models\Role::ADMIN && $booking->status === \Modules\Booking\Models\Booking::FINISHED_BED)
             <button
                 type="button"
                 class="btn btn-success btn-sm mt-2"
