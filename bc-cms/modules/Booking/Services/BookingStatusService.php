@@ -4,6 +4,7 @@ namespace Modules\Booking\Services;
 
 use App\Exceptions\ConflictException;
 use Modules\Booking\Models\Booking;
+use Modules\User\Models\Role;
 
 class BookingStatusService
 {
@@ -12,7 +13,7 @@ class BookingStatusService
         $allStatuses = config('booking.statuses');
 
         $excludedByRole = [
-            'hunter' => [
+            Role::CUSTOMER => [
                 Booking::COMPLETED,
                 Booking::PROCESSING,
                 Booking::CONFIRMED,
@@ -25,7 +26,7 @@ class BookingStatusService
                 Booking::BED_COLLECTION,
                 Booking::FINISHED_BED,
             ],
-            'baseadmin' => [
+            Role::ADMIN => [
                 Booking::PROCESSING,
                 Booking::CONFIRMED,
                 Booking::CANCELLED,
@@ -52,12 +53,12 @@ class BookingStatusService
             Booking::CANCELLED,
             Booking::PROCESSING,
             Booking::CONFIRMED,
-            Booking::START_COLLECTION,
-            Booking::FINISHED_COLLECTION,
-            Booking::PREPAYMENT_COLLECTION,
-            Booking::FINISHED_PREPAYMENT,
-            Booking::BED_COLLECTION,
-            Booking::FINISHED_BED,
+//            Booking::START_COLLECTION,
+//            Booking::FINISHED_COLLECTION,
+//            Booking::PREPAYMENT_COLLECTION,
+//            Booking::FINISHED_PREPAYMENT,
+//            Booking::BED_COLLECTION,
+//            Booking::FINISHED_BED,
             Booking::PAID,
         ];
     }
