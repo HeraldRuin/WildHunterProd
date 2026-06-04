@@ -28,8 +28,6 @@
         @endif
     </td>
 
-    <td class="type a-hidden">{{ $booking->typeText }}</td>
-
     <td class="a-hidden">
         @if($booking->type === 'hotel' && $userRole === \Modules\User\Models\Role::ADMIN)
             <strong>Проживание:</strong>

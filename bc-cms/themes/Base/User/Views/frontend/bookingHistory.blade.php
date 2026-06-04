@@ -77,12 +77,11 @@
                     <div class="table-responsive table-width">
                         <table class="table table-bordered  table-booking-history">
                             <thead>
-                            @if($userRole === 'admin')
+                            @if($userRole === \Modules\User\Models\Role::ADMIN)
                             <tr>
                                 <th class="number-booking">{{__("Number Booking")}}</th>
                                 <th class="data-booking">{{__("Date Booking")}}</th>
                                 <th class="client-booking">{{__("Client Booking")}}</th>
-                                <th class="type-booking">{{__("Type Booking")}}</th>
                                 <th class="detail-booking">{{__("Detail Booking")}}</th>
                                 <th class="status-booking">{{__("Status Booking")}}</th>
                                 <th class="paid-booking">{{__("Paid Booking")}}</th>
@@ -91,8 +90,7 @@
                             @else
                                 <th class="number-booking">{{__("Number Booking")}}</th>
                                 <th class="data-booking">{{__("Date Booking")}}</th>
-                                <th class="client-booking">{{__("Base Name")}}</th>
-                                <th class="type-booking">{{__("Type Booking")}}</th>
+                                <th class="hotel-booking">{{__("Base Name")}}</th>
                                 <th class="detail-booking">{{__("Detail Booking")}}</th>
                                 <th class="status-booking">{{__("Status Booking")}}</th>
                                 <th class="paid-booking">{{__("Paid Booking")}}</th>
@@ -125,6 +123,7 @@
                                         }
                                     }
                                 @endphp
+
                                 @if(view()->exists($moduleName.'::frontend.bookingHistory.' . $loopFile))
                                     @include($moduleName.'::frontend.bookingHistory.' . $loopFile)
                                 @else
