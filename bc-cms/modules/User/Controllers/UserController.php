@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\User\Controllers;
 
 use App\Http\Responses\SuccessResponse;
@@ -10,7 +11,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Matrix\Exception;
-use Modules\Boat\Models\Boat;
 use Modules\Booking\Models\Booking;
 use Modules\Booking\Models\Enquiry;
 use Modules\Booking\Models\Service;
@@ -18,24 +18,18 @@ use Modules\Booking\Services\BookingInvitationService;
 use Modules\Booking\Services\BookingStatusService;
 use Modules\Booking\Services\BookingUserService;
 use Modules\Booking\Services\Calculation\BookingCalculatingService;
-use Modules\Car\Models\Car;
 use Modules\Event\Models\Event;
-use Modules\Flight\Models\Flight;
 use Modules\FrontendController;
 use Modules\Hotel\Models\Hotel;
 use Modules\Hotel\Services\AddDataInView;
 use Modules\Space\Models\Space;
-use Modules\Tour\Models\Tour;
 use Modules\User\Events\NewVendorRegistered;
 use Modules\User\Events\UserSubscriberSubmit;
+use Modules\User\Models\Role;
 use Modules\User\Models\Subscriber;
-use Modules\User\Models\User;
-use Modules\User\Models\UserWeapon;
 use Modules\User\Services\DashboardService;
 use Modules\User\Services\UserService;
 use Modules\Vendor\Models\VendorRequest;
-use Modules\Weapon\Models\Caliber;
-use Modules\Weapon\Models\WeaponType;
 
 class UserController extends FrontendController
 {
@@ -106,19 +100,9 @@ class UserController extends FrontendController
     public function profile(Request $request)
     {
         $user = Auth::user();
-        $userWeapons = $user->weapons->map(function ($weapon) {
-            return [
-                'id'                    => $weapon->id,
-                'hunter_license_number' => $weapon->hunter_license_number,
-                'hunter_license_date'   => $weapon->hunter_license_date,
-                'weapon_type_id'        => $weapon->weapon_type_id,
-                'caliber'               => $weapon->caliber,
-            ];
-        })->values();
         $data = [
             'user'         => $user,
             'page_title'       => __("Profile"),
-            'userWeapons'  => $userWeapons,
             'breadcrumbs'      => [
                 [
                     'name'  => __('Setting'),
@@ -169,37 +153,6 @@ class UserController extends FrontendController
         $user->user_name = Str::slug( $request->input('user_name') ,"_");
         $user->save();
 
-        if ($request->filled('weapons')) {
-            foreach($request->weapons as $weapon) {
-                if (
-                    empty($weapon['hunter_license_number']) &&
-                    empty($weapon['hunter_license_date']) &&
-                    empty($weapon['weapon_type_id']) &&
-                    empty($weapon['caliber'])
-                ) {
-                    continue;
-                }
-
-                $validatedWeapon = validator($weapon, [
-                    'hunter_license_number' => 'required|string|max:255',
-                    'hunter_license_date' => 'required|date',
-                    'weapon_type_id' => 'required|integer',
-                    'caliber' => 'required|integer',
-                ])->validate();
-
-                UserWeapon::updateOrCreate(
-                    ['id' => $weapon['id'] ?? null],
-                    [
-                        'user_id' => $user->id,
-                        'hunter_billet_number' => $request->hunter_billet_number,
-                        'hunter_license_number' => $validatedWeapon['hunter_license_number'],
-                        'hunter_license_date' => $validatedWeapon['hunter_license_date'],
-                        'weapon_type_id' => $validatedWeapon['weapon_type_id'],
-                        'caliber' => $validatedWeapon['caliber'],
-                    ]
-                );
-            }
-        }
         return redirect()->back()->with('success', __('Update successfully'));
     }
 
@@ -214,11 +167,11 @@ class UserController extends FrontendController
         $this->bookingInvitationService->handleCodeAccess($code, $authUser);
 
         if (is_baseAdmin()){
-            $userRole = 'baseadmin';
+            $userRole = Role::ADMIN;
             $hotelId = $authUser->hotels->first()->id;
             $bookings = $this->booking->getBookingHistoryForAdminBase($hotelId, $request->input('status'), $bookingId);
         }else {
-            $userRole = 'hunter';
+            $userRole = Role::CUSTOMER;
             $bookings = $this->booking->getBookingHistory($request->input('status'), $authUser->id, false, false, false, $bookingId);
         }
 
@@ -316,13 +269,9 @@ class UserController extends FrontendController
             \DB::beginTransaction();
             try {
                 Service::where('author_id',$user->id)->delete();
-                Tour::where('author_id',$user->id)->delete();
-                Car::where('author_id',$user->id)->delete();
                 Space::where('author_id',$user->id)->delete();
                 Hotel::where('author_id',$user->id)->delete();
                 Event::where('author_id',$user->id)->delete();
-                Boat::where('author_id',$user->id)->delete();
-                Flight::where('author_id',$user->id)->delete();
                 $user->sendEmailPermanentlyDelete();
                 $user->delete();
                 \DB::commit();
