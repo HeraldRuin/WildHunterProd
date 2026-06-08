@@ -39,14 +39,8 @@ class Booking extends BaseModel
     const DRAFT      = 'draft'; // New booking, before payment processing
     const UNPAID     = 'unpaid'; // Require payment
     const PROCESSING = 'processing'; // обработка заказа
-    const START_COLLECTION = 'collection';
-    const FINISHED_COLLECTION = 'finished_collection';
-    const INVITATION = 'invitation';
-    const PREPAYMENT_COLLECTION = 'prepayment_collection';
+    const PREPAYMENT = 'prepayment';
     const FINISHED_PREPAYMENT = 'finish_prepayment';
-
-    const BED_COLLECTION = 'bed_collection';
-    const FINISHED_BED = 'finish_bed_collection';
 
     const CONFIRMED  = 'confirmed';
     const COMPLETED  = 'completed';
@@ -55,8 +49,6 @@ class Booking extends BaseModel
     const PARTIAL_PAYMENT       = 'partial_payment';
 
     //Типы бронирования
-    const BookingTypeAnimal = 'animal';
-    const BookingTypeHotelAnimal = 'hotel_animal';
     const BookingTypeHotel = 'hotel';
 
     protected $fillable = [
@@ -416,7 +408,7 @@ class Booking extends BaseModel
         $bookingHunter = BookingHunter::create([
             'booking_id' => $this->id,
             'invited_by' => $creatorId,
-            'is_master' => $creator->hasRole('hunter'),
+//            'is_master' => $creator->hasRole('hunter'),
             'creator_role' => $creator->role->code ?? null,
         ]);
         BookingHunterInvitation::create([
