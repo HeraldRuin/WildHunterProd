@@ -281,7 +281,7 @@
                 @endif
             @endif
         @else
-            @if($booking->is_master_hunter && in_array($booking->status, [\Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED, \Modules\Booking\Models\Booking::START_COLLECTION, \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
+            @if(in_array($booking->status, [\Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED]))
                 <button
                     type="button"
                     class="btn btn-danger btn-sm mt-2"
