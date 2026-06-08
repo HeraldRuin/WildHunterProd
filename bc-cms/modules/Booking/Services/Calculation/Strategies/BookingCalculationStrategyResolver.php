@@ -10,8 +10,6 @@ class BookingCalculationStrategyResolver
 {
     protected array $map = [
         Booking::BookingTypeHotel => HotelCalculationStrategy::class,
-        Booking::BookingTypeHotelAnimal => HotelHuntingCalculationStrategy::class,
-        Booking::BookingTypeAnimal => HuntingCalculationStrategy::class,
     ];
 
     /**
