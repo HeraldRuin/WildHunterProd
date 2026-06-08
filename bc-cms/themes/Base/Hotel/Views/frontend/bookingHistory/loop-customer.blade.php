@@ -244,72 +244,7 @@
     </td>
 
     <td>
-        @if($isInvited && $isCollectionStatus)
-            @if(!$isInvitationAccepted)
-                <button
-                    type="button"
-                    class="btn btn-primary btn-sm mt-2"
-                    onclick="openModal('invitationModal', {{ $booking->id }})">
-                    {{__("Open invitation")}}
-                </button>
-            @endif
-            @if($isInvitationAccepted && in_array($booking->type, ['hotel_animal', 'hotel']))
-                @if(!$booking->is_master_hunter && in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::START_COLLECTION, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mt-2"
-                        @click="openCollectionAsHunter({{ $booking->id }})">
-                        {{__("Open collection")}}
-                    </button>
-                @endif
-                @if(!$booking->is_master_hunter && in_array($booking->status,  [\Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mt-2"
-                        @click="openBookingPlacesModal({{ $booking }}, $event)">
-                        {{__("Select bed place")}}
-                    </button>
-                @endif
-                @if(!$booking->is_master_hunter && $booking->status ===  \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION)
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mt-2"
-                        data-booking-id="{{ $booking->id }}"
-                        @click="openBookingPrepaymentPaid({{ $booking->id }}, $event)">
-                        {{__("Prepayment")}}
-                    </button>
-                @endif
-            @endif
-        @else
-            @if(in_array($booking->status, [\Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED]))
-                <button
-                    type="button"
-                    class="btn btn-danger btn-sm mt-2"
-                    @click="openCancelBookingModal({{ $booking->id }}, $event)">
-                    {{__("Cancele booking")}}
-                </button>
-            @endif
-
-            @if($booking->is_master_hunter)
-                @if(in_array($booking->status, [\Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION, \Modules\Booking\Models\Booking::START_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mt-2"
-                        data-bs-toggle="modal"
-                        data-bs-target="#collectionModal{{ $booking->id }}">
-                        {{__("Open collection")}}
-                    </button>
-                    @elseif($booking->status === \Modules\Booking\Models\Booking::CONFIRMED)
-                    <button
-                        type="button"
-                        class="btn btn-primary btn-sm mt-2"
-                        @click="openCollectionAsMaster({{ $booking->id }}, $event)">
-                        {{__("Open collection")}}
-                    </button>
-                @endif
-            @endif
-
-            @if($booking->is_master_hunter && $booking->status === \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION)
+            @if(in_array($booking->status, [\Modules\Booking\Models\Booking::CONFIRMED, \Modules\Booking\Models\Booking::PREPAYMENT_COLLECTION]))
                 <button
                     type="button"
                     class="btn btn-primary btn-sm mt-2"
@@ -318,17 +253,15 @@
                     {{__("Prepayment")}}
                 </button>
             @endif
-
-            @if($booking->is_master_hunter && in_array($booking->status, [\Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
-                    <button
+            @if(in_array($booking->status, [\Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED]))
+                <button
                     type="button"
-                    class="btn btn-primary btn-sm mt-2"
-                    @click="openBookingPlacesModal({{ $booking }}, $event)">
-                    {{__("Select bed place")}}
+                    class="btn btn-danger btn-sm mt-2"
+                    @click="openCancelBookingModal({{ $booking->id }}, $event)">
+                    {{__("Cancele booking")}}
                 </button>
             @endif
-
-                @if($booking->is_master_hunter && in_array($booking->status, [\Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
+            @if($booking->is_master_hunter && in_array($booking->status, [\Modules\Booking\Models\Booking::FINISHED_PREPAYMENT, \Modules\Booking\Models\Booking::BED_COLLECTION, \Modules\Booking\Models\Booking::FINISHED_BED]))
                 <button
                     type="button"
                     class="btn btn-primary btn-sm mt-2"
@@ -337,7 +270,6 @@
                     {{__("Add services")}}
                 </button>
             @endif
-        @endif
     </td>
 </tr>
 
