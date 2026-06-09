@@ -977,10 +977,11 @@ class BookingController extends \App\Http\Controllers\Controller
     public function completeBooking(Booking $booking): JsonResponse
     {
         $this->bookingAccessService->ensureUserAuthenticated();
-
         $this->bookingAccessService->ensureCanAccessBooking($booking, Auth::user());
         $result = $this->bookingCollectionService->complete($booking);
+
         $this->bookingNotificationService->sendCompletedEmail($booking);
+        event(new BookingUpdatedEvent($booking));
 
         return new SuccessResponse(code: $result['code'], domain: 'booking');
     }
