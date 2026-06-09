@@ -20,11 +20,6 @@ class BookingStatusService
                 Booking::CANCELLED,
                 Booking::UNPAID,
                 Booking::PAID,
-//                Booking::PARTIAL_PAYMENT,
-//                Booking::START_COLLECTION,
-//                Booking::PREPAYMENT_COLLECTION,
-//                Booking::BED_COLLECTION,
-//                Booking::FINISHED_BED,
             ],
             Role::ADMIN => [
                 Booking::PROCESSING,
@@ -33,11 +28,6 @@ class BookingStatusService
                 Booking::UNPAID,
                 Booking::PAID,
                 Booking::PARTIAL_PAYMENT,
-//                Booking::START_COLLECTION,
-//                Booking::PREPAYMENT_COLLECTION,
-//                Booking::BED_COLLECTION,
-//                Booking::FINISHED_BED,
-//                Booking::INVITATION,
             ]
         ];
 
