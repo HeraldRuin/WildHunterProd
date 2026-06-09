@@ -50,7 +50,6 @@
 
             @if(!empty($bookingId) && empty($bookingCode))
                 <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
-{{--                    <span class="text-muted"><i class="fa fa-filter"></i> {{__("Showing filtered results for booking")}} #{{ $bookingId }}</span>--}}
                     <div style="margin-right: 180px;">
                         @php
                             $clearAllUrl = route('user.booking_history');
@@ -103,18 +102,14 @@
                                     $bookingType = $booking->type ?? null;
                                     $objectModel = $booking->object_model ?? null;
 
-                                    $isHotel = in_array($bookingType, ['hotel', 'hotel_animal']) || $objectModel === 'hotel';
-                                    $isAnimal = $bookingType === 'animal' || $objectModel === 'animal';
+                                    $isHotel = $bookingType === 'hotel' || $objectModel === 'hotel';
 
-                                    if ($isHotel || $isAnimal) {
+                                    if ($isHotel) {
                                         $loopFile = 'loop-' . $userRole;
-                                        if ($isHotel) {
-                                            $moduleName = 'Hotel';
-                                        } else {
-                                            $moduleName = 'Animal';
-                                        }
+                                        $moduleName = 'Hotel';
                                     } else {
                                         $loopFile = 'loop';
+
                                         if (!empty($objectModel)) {
                                             $moduleName = ucfirst(strtolower($objectModel));
                                         } else {
