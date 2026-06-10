@@ -1,6 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
+    console.log($('#usersSelect').val());
     <form action="{{ route('hotel.admin.store', ['id' => $row->id ? $row->id : '-1', 'lang' => request()->query('lang')]) }}"
         method="post">
         @csrf
@@ -34,7 +35,9 @@
                 <div class="row">
                     <div class="col-md-9">
                         @include('Hotel::admin.hotel.content')
-                        @include('Hotel::admin.hotel.hunting')
+                        @if($can_assign_user)
+                            @include('Hotel::admin.hotel.users-assign-base')
+                        @endif
                         @include('Hotel::admin.hotel.pricing')
                         @include('Hotel::admin.hotel.location')
                         @include('Hotel::admin.hotel.surrounding')
