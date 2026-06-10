@@ -1,9 +1,12 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 <div class="modal fade" id="bookingPrepaymentModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{__('Prepayment booking')}} #{{ $booking->booking_number }}</h5>
+            <div class="modal-header flex-column align-items-start">
+                <h5 class="modal-title">{{__('bookingHistory.modal.tittle.pay_booking')}} #{{ $booking->booking_number }}</h5>
+                <small class="text-muted">
+                    {{__('bookingHistory.modal.description.pay_booking')}}
+                </small>
             </div>
             @php
                    $prepaymentPaid = false;
@@ -15,7 +18,6 @@
                    }
             @endphp
             <div class="modal-footer">
-
                 <button type="button"
                         class="btn btn-success btn-prepayment"
                         data-booking-id="{{ $booking->id }}"
