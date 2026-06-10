@@ -236,7 +236,7 @@
                     class="btn btn-primary btn-sm mt-2"
                     data-booking-id="{{ $booking->id }}"
                     @click="openBookingPrepaymentPaid({{ $booking->id }}, $event)">
-                    {{__("bookingHistory.ui.pay")}}
+                    {{__("bookingHistory.buttons.pay")}}
                 </button>
             @endif
             @if(in_array($booking->status, [\Modules\Booking\Models\Booking::PROCESSING, \Modules\Booking\Models\Booking::CONFIRMED, \Modules\Booking\Models\Booking::PREPAYMENT]))
