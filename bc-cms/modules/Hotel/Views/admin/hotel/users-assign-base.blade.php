@@ -1,0 +1,19 @@
+<div class="panel">
+    <div class="panel-title"><strong>{{__('hotelAdmin.name.user_assign_base_tittle')}}</strong></div>
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="">
+                <select id="usersSelect" name="admin_base" class="form-control">
+                    <option value="" hidden>
+                        {{ __('hotelAdmin.name.user_search') }}
+                    </option>
+                    @foreach($baseAdmins as $user)
+                        <option value="{{ $user->id }}">
+                            {{ $user->first_name }} {{ $user->last_name }} ({{ $user->email }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
