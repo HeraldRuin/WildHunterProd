@@ -1833,9 +1833,7 @@ class Booking extends BaseModel
 
     public function getAmountPerPerson(): float
     {
-        $count = $this->acceptedInvitationsOfMaster()->count();
-
-        return round($this->total / $count, 2);
+        return round($this->total, 2);
     }
 
     public function shouldCheckPrepayment(): bool
