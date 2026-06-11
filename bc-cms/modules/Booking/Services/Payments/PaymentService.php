@@ -112,7 +112,6 @@ class PaymentService
             return;
         }
 
-        $this->bookingTimerService->startBedTimer($booking);
         $booking->prepayment_paid = true;
         $booking->save();
     }
