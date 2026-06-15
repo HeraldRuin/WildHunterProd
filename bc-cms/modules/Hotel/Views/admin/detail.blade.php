@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    console.log($('#usersSelect').val());
     <form action="{{ route('hotel.admin.store', ['id' => $row->id ? $row->id : '-1', 'lang' => request()->query('lang')]) }}"
         method="post">
         @csrf
