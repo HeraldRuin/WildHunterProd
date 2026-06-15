@@ -7,7 +7,7 @@ return [
 
     ],
     'buttons' => [
-        'pay' => 'Оплатить',
+        'pay' => 'Предоплата',
     ],
     'modal' => [
         'tittle' => [
