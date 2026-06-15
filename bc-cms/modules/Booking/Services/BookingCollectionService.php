@@ -68,102 +68,6 @@ readonly class BookingCollectionService
     }
 
     /**
-     * @throws ConflictException
-     */
-    public function finishCollection(Booking $booking, $user): array
-    {
-        $this->checkAccess($booking, $user);
-
-        $this->checkCollectionStatus($booking);
-
-        $allInvitations = $booking->getAllInvitations();
-
-        $notConfirmedInvitations = $allInvitations->filter(function ($invitation) {
-            return !in_array($invitation->status, ['accepted', 'declined', 'removed']);
-        });
-
-        $confirmedInvitations = $allInvitations->filter(function ($invitation) {
-            return $invitation->status === 'accepted';
-        });
-
-        $acceptedInvitations = $allInvitations->filter(function ($invitation) {
-            return !in_array($invitation->status, ['declined', 'removed']);
-        });
-
-        $animalName = '';
-        $requiredHunters = 1;
-
-        if ($booking->animal_id && $booking->hotel_id) {
-            $animal = Animal::find($booking->animal_id);
-            if ($animal) {
-                $animalName = $booking->getAnimalName();
-                $requiredHunters = $booking->getRequiredHuntersCount();
-            }
-        } else {
-            if ($booking->type === 'hotel') {
-                $requiredHunters = (int) ($booking->total_guests ?? 0);
-            } elseif ($booking->type === 'animal' || $booking->type === 'hotel_animal') {
-                $requiredHunters = (int) ($booking->total_hunting ?? 0);
-            }
-
-            if ($requiredHunters <= 0) {
-                $requiredHunters = 1;
-            }
-
-            if ($booking->animal_id) {
-                $animal = Animal::find($booking->animal_id);
-                if ($animal) {
-                    $animalName = $booking->getAnimalName();
-                }
-            }
-        }
-
-        $this->checkMinAnimal($booking, $acceptedInvitations, $requiredHunters, $animalName);
-
-        $this->checkConfirmed($booking, $acceptedInvitations, $requiredHunters);
-
-
-        if ($booking->type === 'animal') {
-            $booking->status = Booking::FINISHED_COLLECTION;
-        } else {
-            $timerHour = $this->bookingTimerService->getTimerHours($booking, 'paid');
-            $booking->status = Booking::PREPAYMENT_COLLECTION;
-            $this->bookingTimerService->startTimer($booking->id, $timerHour, 'paid', ['collection']);
-        }
-
-        $booking->save();
-        event(new BookingFinishEvent($booking));
-
-        return [
-            'code' => 'gathering_has_completed'
-        ];
-    }
-
-    /**
-     * @throws ConflictException
-     * @throws ForbiddenException
-     */
-    public function cancelCollection(Booking $booking, $user): array
-    {
-        $this->checkAccess($booking, $user);
-        $this->checkCancelStatus($booking);
-
-        DB::transaction(function () use ($booking) {
-
-            $this->rollbackStatusAndClearTimers($booking);
-            $this->notifyHunters($booking);
-            $this->bookingInvitationService->deleteInvitations($booking);
-            $this->notifyCreator($booking);
-
-            event(new BookingUpdatedEvent($booking));
-        });
-
-        return [
-            'code' => 'hunter_gathering_cancelled'
-        ];
-    }
-
-    /**
      * @throws ForbiddenException
      */
     private function checkAccess(Booking $booking, User $user): void
@@ -279,10 +183,8 @@ readonly class BookingCollectionService
     {
         $this->bookingStatusService->canChangeBookingState($booking);
 
-        $booking->status = Booking::COMPLETED;
+        $booking->status = Booking::PREPAYMENT;
         $booking->save();
-
-        event(new BookingUpdatedEvent($booking));
 
         return [
             'code' => 'booking_completed',

@@ -14,9 +14,6 @@ Route::group(['prefix'=>config('booking.booking_route_prefix')],function(){
     Route::get('/{code}/check-status','BookingController@checkStatusCheckout');
     Route::post('/{booking}/change-user','BookingController@changeUserBooking');
     Route::post('/{booking}/confirm','BookingController@confirmBooking');
-    Route::post('/{booking}/start-collection','BookingController@startCollection');
-    Route::post('/{booking}/cancel-collection','BookingController@cancelCollection');
-    Route::post('/{booking}/finish-collection','BookingController@finishCollection');
     Route::post('/{booking}/invite-hunter','BookingController@inviteHunter');
     Route::post('/{booking}/invite-hunter-by-email','BookingController@inviteHunterByEmail');
     Route::get('/{booking}/invited-hunters','BookingController@getInvitedHunters');

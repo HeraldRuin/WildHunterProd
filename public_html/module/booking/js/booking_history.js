@@ -86,72 +86,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.collectionState = window.collectionState || {};
                 return !!window.collectionState[String(bookingId)];
             },
-
-            // ТОЛЬКО ДЛЯ МАСТЕРА
-            openCollectionAsMaster(bookingId, event) {
-                const me = this;
-                const btn = event?.currentTarget || null;
-                if (btn) bc_button_loading(btn, true);
-
-                $.post(`/booking/${bookingId}/start-collection`)
-                    .done(res => {
-                        bc_button_loading(btn, false);
-
-                        if (res.success) {
-                            me.currentCollectionBookingId = bookingId;
-
-                            window.openModal('collectionModal', bookingId);
-
-                            setTimeout(() => {
-                                me.initializeHunterSlots(bookingId);
-                            }, 200);
-                        }
-                    })
-                    .fail((e) => {
-                        bc_button_loading(btn, false);
-                        bookingCoreApp.showError(e);
-                    });
-            },
-            // ТОЛЬКО ДЛЯ ПРИГЛАШЕННОГО
-            openCollectionAsHunter(bookingId) {
-                this.currentCollectionBookingId = bookingId;
-
-                window.openModal('collectionModal', bookingId);
-
-                setTimeout(() => {
-                    this.initializeHunterSlots(bookingId);
-                }, 200);
-            },
-            initializeHunterSlots(bookingId) {
-                const modal = document.getElementById('collectionModal' + bookingId);
-                if (!modal) return;
-
-                this.declinedHunters = [];
-                const huntersCount = parseInt(modal.dataset.huntersCount || '0', 10);
-
-                if (huntersCount > 0) {
-                    this.hunterSlots = Array.from({length: huntersCount}, () => ({
-                        query: '',
-                        hunter: null,
-                        results: [],
-                        showResults: false,
-                        isSearching: false,
-                        noResults: false,
-                        debounceTimeout: null,
-                        showEmailInput: false,
-                        emailMessage: '',
-                        emailAddress: ''
-                    }));
-
-                    this.loadInvitedHunters(bookingId);
-
-                    this.$nextTick(() => {
-                        this.checkFinishCollectionButton(bookingId);
-                    });
-                } else {
-                    this.hunterSlots = [];
-                }
-            },
             getStatusBadge(hunter) {
                 switch (hunter.invitation_status) {
                     case 'accepted': return { text: 'Приглашение принято', class: 'bg-secondary' }
@@ -177,95 +111,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return {
                     text: 'Не оплачено',
                     class: 'bg-danger'
-                }
-            },
-            loadInvitedHunters(bookingId) {
-                request(`/booking/${bookingId}/invited-hunters`)
-                    .then(({ hunters, booking }) => {
-                        const allHunters = hunters || [];
-                        const activeHunters = allHunters.filter(h => h.invitation_status !== 'declined');
-                        const declinedHunters = allHunters.filter(h => h.invitation_status === 'declined');
-
-                        if (activeHunters.length > 0){
-                            this.$set(this, 'declinedHunters', declinedHunters);
-                            this.invitedHunters = activeHunters
-                            this.booking = booking
-
-                            const updatedSlots = this.hunterSlots.map((slot, index) => {
-                                if (index < activeHunters.length) {
-                                    const hunter = activeHunters[index];
-
-                                    if (typeof hunter.showEmailInput === 'undefined') {
-                                        hunter.showEmailInput = false;
-                                    }
-                                    if (typeof hunter.emailMessage === 'undefined') {
-                                        hunter.emailMessage = '';
-                                    }
-                                    let queryText = '';
-                                    if (hunter.is_external) {
-                                        queryText = hunter.email || '';
-                                    } else {
-                                        queryText = hunter.user_name || (hunter.first_name + ' ' + hunter.last_name).trim() || '';
-                                    }
-
-                                    return {
-                                        ...slot,
-                                        hunter: hunter,
-                                        query: queryText
-                                    };
-                                }
-                                return {
-                                    ...slot,
-                                    hunter: null,
-                                    query: ''
-                                };
-                            });
-
-                            this.$set(this, 'hunterSlots', updatedSlots);
-                            this.$nextTick(() => {
-                                this.$forceUpdate();
-                                this.checkFinishCollectionButton(bookingId);
-                            });
-                        } else {
-                            const clearedSlots = this.hunterSlots.map(slot => ({
-                                ...slot,
-                                hunter: null,
-                                query: ''
-                            }));
-                            this.$set(this, 'hunterSlots', clearedSlots);
-                            this.$nextTick(() => {
-                                this.checkFinishCollectionButton(bookingId);
-                            });
-                        }
-                    });
-            },
-
-            checkFinishCollectionButton(bookingId) {
-                const finishBtn = document.querySelector('.btn-finish-collection[data-booking-id="' + bookingId + '"]');
-                const modal = document.getElementById('collectionModal' + bookingId);
-                if (!finishBtn || !modal) return;
-
-                const animalMinHunters = parseInt(modal.dataset.animalMinHunters || '0', 10);
-
-                // Считаем приглашенных охотников (со статусом не accepted)
-                let invitedCount = 0;
-                if (this.hunterSlots && this.hunterSlots.length > 0) {
-                    invitedCount = this.hunterSlots.filter(slot =>
-                        slot.hunter &&
-                        slot.hunter.invited &&
-                        slot.hunter.invitation_status === 'accepted'
-                    ).length;
-                }
-
-                // Если не хватает охотников - блокируем кнопку
-                if (invitedCount < animalMinHunters) {
-                    finishBtn.disabled = true;
-                    finishBtn.classList.add('disabled');
-                    finishBtn.title = 'Таймер закончен, но не все охотники собраны. Необходимо собрать ' + animalMinHunters + ' охотников.';
-                } else {
-                    finishBtn.disabled = false;
-                    finishBtn.classList.remove('disabled');
-                    finishBtn.title = '';
                 }
             },
             searchHunterDebounced() {
@@ -313,76 +158,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                     .finally(() => {
                         this.hunterIsSearching = false;
-                    });
-            },
-            inviteHunter(hunter, bookingId, event) {
-                if (!hunter || !hunter.id) return;
-
-                if (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                this.$set(hunter, 'showEmailInput', false);
-                hunter.showEmailInput = false;
-
-                const bookingIdNum = parseInt(bookingId, 10);
-                if (!bookingIdNum) return;
-
-                const btn = event?.currentTarget || null;
-                if (btn) bc_button_loading(btn, true);
-
-                $.ajax({
-                    url: `/booking/${bookingIdNum}/invite-hunter`,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        hunter_id: hunter.id,
-                        _token: $('meta[name="csrf-token"]').attr('content') || ''
-                    },
-                    success: (res) => {
-                        bc_button_loading(btn, false);
-
-                        // Находим объект в массиве и обновляем его напрямую
-                        const index = this.hunterSearchResults.findIndex(h => h.id === hunter.id);
-                        if (index !== -1) {
-                            this.$set(this.hunterSearchResults[index], 'invited', true);
-                            this.$set(this.hunterSearchResults[index], 'invitation_status', 'pending');
-                            this.$set(this.hunterSearchResults[index], 'showEmailInput', false);
-                        }
-
-                        // Обновляем также в слотах охотников
-                        this.hunterSlots.forEach(slot => {
-                            if (slot.hunter && slot.hunter.id === hunter.id) {
-                                this.$set(slot.hunter, 'invited', true);
-                                this.$set(slot.hunter, 'invitation_status', 'pending');
-                            }
-                        });
-
-                        // Также обновляем переданный объект hunter
-                        Object.assign(hunter, {
-                            invited: true,
-                            invitation_status: 'pending',
-                            showEmailInput: false
-                        });
-
-                        // Принудительно обновляем Vue для немедленного отображения
-                        this.$forceUpdate();
-                        this.$nextTick(() => {
-                            this.checkFinishCollectionButton(bookingId);
-                        });
-
-                        if (typeof bookingCoreApp !== 'undefined' && bookingCoreApp.showAjaxMessage) {
-                            bookingCoreApp.showAjaxMessage(res);
-                        } else if (res.message) {
-                            alert(res.message);
-                        }
-                    },
-                    error: function (e) {
-                        bc_button_loading(btn, false);
-                        bookingCoreApp.showError(e);
                     }
-                });
+                );
             },
             getHunterName(hunter) {
                 if (!hunter) return '';
@@ -550,78 +327,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     slot.emailAddress = '';
                 }
             },
-            inviteByEmailForSlot(slotIndex, bookingId, event) {
-                const slot = this.hunterSlots[slotIndex];
-                if (!slot) return;
-
-                const query = slot.query ? slot.query.trim() : '';
-                if (!query) {
-                    bookingCoreApp.showError({ message: 'Введите email адрес охотника' });
-                    return;
-                }
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(query)) {
-                    bookingCoreApp.showError({ message: 'Введите корректный email адрес' });
-                    return;
-                }
-
-                const bookingIdNum = parseInt(bookingId, 10);
-                if (!bookingIdNum) return;
-
-                const btn = event?.currentTarget || null;
-                if (btn) bc_button_loading(btn, true);
-
-                $.ajax({
-                    url: `/booking/${bookingIdNum}/invite-hunter-by-email`,
-                    type: 'POST',
-                    dataType: 'json',
-                    data: {
-                        email: query,
-                        _token: $('meta[name="csrf-token"]').attr('content') || ''
-                    },
-                    success: (res) => {
-                        bc_button_loading(btn, false);
-
-                        if (res.success) {
-                            const email = query.trim();
-                            const hunterData = {
-                                id: null,
-                                email: email,
-                                first_name: '',
-                                last_name: '',
-                                user_name: null,
-                                phone: null,
-                                invited: true,
-                                invitation_status: 'pending',
-                                is_external: true
-                            };
-                            const updatedSlot = {
-                                ...slot,
-                                hunter: hunterData,
-                                query: email,
-                                results: [],
-                                showResults: false,
-                                noResults: false
-                            };
-
-                            const updatedSlots = [...this.hunterSlots];
-                            updatedSlots[slotIndex] = updatedSlot;
-                            this.$set(this, 'hunterSlots', updatedSlots);
-                            this.$nextTick(() => {
-                                this.$forceUpdate();
-                                this.checkFinishCollectionButton(bookingIdNum);
-                                setTimeout(() => {
-                                    this.loadInvitedHunters(bookingIdNum);
-                                }, 500);
-                            });
-                        }
-                    },
-                    error: (e) => {
-                        bc_button_loading(btn, false);
-                        bookingCoreApp.showError(e);
-                    }
-                });
-            },
             clearHunterSlot(slotIndex) {
                 const slot = this.hunterSlots[slotIndex];
                 if (!slot) return;
@@ -696,7 +401,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             })
                             .finally(() => {
                                 if (btn) { bc_button_loading(btn, false) }
-                            });
+                            }
+                        );
                     }
                 });
             },
@@ -804,27 +510,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 bookingCoreApp.showError(e);
                             }
                         });
-                    }
-                });
-            },
-            finishCollection(event, bookingId) {
-                const btn = event?.currentTarget || null;
-
-                bookingCoreApp.showConfirm({
-                    message: 'Вы уверены, что хотите завершить сбор?',
-                    callback: (result) => {
-                        if (!result) return;
-                        if (btn) bc_button_loading(btn, true);
-
-                        postRequest(`/booking/${bookingId}/finish-collection`)
-                            .then((res) => {
-                                window.closeModal('collectionModal', bookingId)
-                                bookingCoreApp.showAjaxMessage(res);
-                                setTimeout(function () {window.location.reload()}, 500);
-                            })
-                            .finally(() => {
-                                if (btn) { bc_button_loading(btn, false) }
-                            });
                     }
                 });
             },

@@ -857,39 +857,6 @@ class BookingController extends \App\Http\Controllers\Controller
         return new SuccessResponse(code: $result['code'], domain: 'booking');
     }
 
-    public function startCollection(Booking $booking): JsonResponse
-    {
-        if (!Auth::check()) {
-            return $this->sendError('Необходима авторизация')->setStatusCode(401);
-        }
-
-        $result = $this->bookingTimerService->startCollectionTimer($booking);
-
-        return new SuccessResponse(code: $result['code'], domain: 'booking');
-    }
-
-    public function cancelCollection(Booking $booking): JsonResponse
-    {
-        if (!Auth::check()) {
-            return $this->sendError('Необходима авторизация')->setStatusCode(401);
-        }
-
-        $result = $this->bookingCollectionService->cancelCollection($booking, $this->currentUser());
-
-        return new SuccessResponse(code: $result['code'], domain: 'booking');
-    }
-
-    public function finishCollection(Booking $booking): JsonResponse
-    {
-        if (!Auth::check()) {
-            return $this->sendError('Необходима авторизация')->setStatusCode(401);
-        }
-
-        $result = $this->bookingCollectionService->finishCollection($booking, $this->currentUser());
-
-        return new SuccessResponse(code: $result['code'], domain: 'booking');
-    }
-
     /**
      * Сохраняет приглашение охотника для брони
      * @throws UnauthorizedException
