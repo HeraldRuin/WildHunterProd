@@ -104,14 +104,7 @@ class PaymentService
         }
 
         $booking = $payment->booking;
-        $userId = $payment->create_user;
-
-       $booking->invitationUser($userId)?->update(['prepayment_paid' => true, 'prepayment_paid_status' => BookingHunterInvitation::PREPAYMENT_PAID]);
-
-        if ($booking->countAcceptedAndPaidHunters() !== $booking->countAcceptedHunters()) {
-            return;
-        }
-
+        $booking->status = Booking::PAID;
         $booking->prepayment_paid = true;
         $booking->save();
     }

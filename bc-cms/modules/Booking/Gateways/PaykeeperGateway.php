@@ -124,6 +124,10 @@ class PaykeeperGateway extends BaseGateway
         return $payment;
     }
 
+    /**
+     * @throws ConnectionException
+     * @throws \Exception
+     */
     public function deleteInvoice(string $invoiceId): bool
     {
         $token = $this->getAccessToken();
