@@ -313,16 +313,6 @@ class BookingCalculator
     }
     public function getAccommodation(Booking $booking, User $user): array
     {
-        $isAnimal = $booking->type === Booking::BookingTypeAnimal;
-
-        if ($isAnimal) {
-            return [
-                'title_name' => 'Проживание, ' . plural_sutki(0),
-                'total_cost' => 0,
-                'my_cost' => 0,
-            ];
-        }
-
         return [
             'title_name' => 'Проживание, ' . plural_sutki($booking->duration_days),
             'total_cost' => $this->getAccommodationCost($booking),
@@ -352,13 +342,6 @@ class BookingCalculator
     }
     public function getPrepaymentMade(Booking $booking, int $huntersCount): array
     {
-        if ($booking->type === Booking::BookingTypeAnimal) {
-            return [
-                'total_cost' => 0,
-                'my_cost' => 0,
-            ];
-        }
-
         return [
             'title_name' => 'Внесена предоплата',
             'total_cost' => $this->basePrepaymentMade($booking),
@@ -393,23 +376,7 @@ class BookingCalculator
     //Подсчет в историю бронирования в колонку оплата (админа базы)
     public function getBookingTotal(Booking $booking, $services, int $huntersCount)
     {
-        if ($booking->type === Booking::BookingTypeAnimal) {
-            return [
-                'prepaid_total' => 0,
-                'base_total' => $booking->is_paid? 0 : $this->calculateBaseTotal($booking, $services, $huntersCount),
-                'total' => 0,
-            ];
-        }
-
         if ($booking->type === Booking::BookingTypeHotel) {
-            return [
-                'prepaid_total' => $this->basePrepaymentMade($booking),
-                'base_total' => $booking->is_paid? 0 : $this->calculateBaseTotal($booking, $services, $huntersCount),
-                'total' => $this->basePrepaymentMade($booking) + $this->calculateBaseTotal($booking, $services, $huntersCount),
-            ];
-        }
-
-        if ($booking->type === Booking::BookingTypeHotelAnimal) {
             return [
                 'prepaid_total' => $this->basePrepaymentMade($booking),
                 'base_total' => $booking->is_paid? 0 : $this->calculateBaseTotal($booking, $services, $huntersCount),
