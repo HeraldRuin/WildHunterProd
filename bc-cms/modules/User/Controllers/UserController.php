@@ -168,7 +168,7 @@ class UserController extends FrontendController
 
         if (is_baseAdmin()){
             $userRole = Role::ADMIN;
-            $hotelId = $authUser->hotels->first()->id;
+            $hotelId = $authUser->hotels->first()?->id;
             $bookings = $this->booking->getBookingHistoryForAdminBase($hotelId, $request->input('status'), $bookingId);
         }else {
             $userRole = Role::CUSTOMER;
