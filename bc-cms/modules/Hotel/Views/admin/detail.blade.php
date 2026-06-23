@@ -35,9 +35,6 @@
                     <div class="col-md-9">
                         @include('Hotel::admin.hotel.content')
                         @include('Hotel::admin.hotel.users-assign-base')
-{{--                        @if($can_assign_user)--}}
-{{--                            @include('Hotel::admin.hotel.users-assign-base')--}}
-{{--                        @endif--}}
                         @include('Hotel::admin.hotel.pricing')
                         @include('Hotel::admin.hotel.location')
                         @include('Hotel::admin.hotel.surrounding')
