@@ -7,8 +7,8 @@ use Illuminate\Contracts\Http\Kernel;
 class ThemeProvider extends \Themes\Base\ThemeProvider
 {
 
-    public static $version = '4.0.0';
-    public static $name = 'Booking Core';
+    public static $version = '1.0.0';
+    public static $name = 'BookRest';
     public static $seeder = \Themes\BC\Database\Seeders\DatabaseSeeder::class;
 
     public static $modules = [

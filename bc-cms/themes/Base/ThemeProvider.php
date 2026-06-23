@@ -11,9 +11,9 @@ use Themes\Base\Core\Middleware\RunUpdater;
 class ThemeProvider extends AbstractThemeProvider
 {
 
-    public static $version = '2.5.1';
+    public static $version = '1.0.0';
     public static $asset_version;
-    public static $name = 'Booking Core';
+    public static $name = 'BookRest';
     public static $parent;
 
     public static function info()
