@@ -13,6 +13,7 @@ return [
     ],
     'buttons' => [
         'add_new_service' => 'Добавить услугу',
+        'unassign_admin' => 'Отвязать',
     ],
     'errors' => [
 

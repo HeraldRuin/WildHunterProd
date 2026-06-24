@@ -13,6 +13,7 @@ Route::group(['prefix'=>'user/'.config('hotel.hotel_route_prefix'),'middleware' 
     Route::get('/restore/{id}', 'VendorController@restore')->name('hotel.vendor.restore')->middleware(['signed']);
     Route::get('/edit/{id}','VendorController@edit')->name('hotel.vendor.edit');
     Route::get('/del/{id}', 'VendorController@delete')->name('hotel.vendor.delete')->middleware(['signed']);
+    Route::post('/unassignAdmin/{id}','HotelController@unassignAdmin')->name('hotel.admin.unassignAdmin');
     Route::post('/store/{id}','VendorController@store')->name('hotel.vendor.store');
     Route::get('bulkEdit/{id}', 'VendorController@bulkEdithotel')->name("hotel.vendor.bulk_edit")->middleware(['signed']);
     Route::get('/booking-report/bulkEdit/{id}','VendorController@bookingReportBulkEdit')->name("hotel.vendor.booking_report.bulk_edit");
