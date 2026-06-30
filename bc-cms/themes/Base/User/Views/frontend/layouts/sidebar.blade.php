@@ -175,7 +175,7 @@ foreach ($menus as $k => $menuItem) {
 
             $childParams = $menuItem2['params'] ?? [];
             $childParams['user'] = $dataUser->id;
-            $params['viewAdminCabinet'] = $viewAdminCabinet;
+            $childParams['viewAdminCabinet'] = $viewAdminCabinet;
 
             if (Route::has($menuItem2['url'])) {
                 $childUrl = route($menuItem2['url'], $childParams);

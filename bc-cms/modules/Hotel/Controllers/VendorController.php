@@ -21,6 +21,7 @@ use Modules\Hotel\Models\HotelTerm;
 use Modules\Hotel\Models\HotelTranslation;
 use Modules\Location\Models\LocationCategory;
 use Modules\User\Models\Plan;
+use Modules\User\Services\DashboardService;
 
 class VendorController extends FrontendController
 {
@@ -37,8 +38,13 @@ class VendorController extends FrontendController
     private Booking $booking;
     protected AddDataInView $cabinetService;
 
-    public function __construct(Hotel $hotel,HotelTranslation $hotelTrans, Booking $booking, AddDataInView $cabinetService)
-    {
+    public function __construct(
+        Hotel $hotel,
+        HotelTranslation $hotelTrans,
+        Booking $booking,
+        AddDataInView $cabinetService,
+        protected DashboardService $dashboardService,
+    ) {
         parent::__construct();
         $this->hotelClass = $hotel;
         $this->hotelTranslationClass = $hotelTrans;
@@ -64,13 +70,7 @@ class VendorController extends FrontendController
     {
         $this->checkPermission('hotel_view');
         $cabinetData = $this->cabinetService->getCabinetData();
-        $query = $this->hotelClass::query();
-
-        if ($this->cabinetService->getViewAdminCabinet()) {
-            $query->where('admin_base', $this->cabinetService->getViewUserId());
-        } else {
-            $query->where('admin_base', Auth::id());
-        }
+        $query = $this->applyCabinetHotelFilter($this->hotelClass::query());
 
         $list_hotel = $query->orderBy('id', 'desc');
 
@@ -213,13 +213,9 @@ class VendorController extends FrontendController
 //            return redirect(route('user.plan'));
 //        }
 
-        if ($AuthUser->hasRole('baseadmin')){
-            $row->admin_base = $AuthUser->id;
-        }
-
-        if ($this->cabinetService->getViewAdminCabinet()){
-            $row->admin_base = $this->cabinetService->getViewUserId();
-        }
+        $row->admin_base = $this->cabinetService->getViewAdminCabinet()
+            ? $this->cabinetService->getViewUser()
+            : Auth::id();
 
         $res = $row->saveOriginOrTranslation($request->input('lang'),true);
 
@@ -235,9 +231,11 @@ class VendorController extends FrontendController
                 return back()->with('success',  __('Hotel updated') );
             }else{
                 event(new CreatedServicesEvent($row));
-                return redirect(route('hotel.vendor.edit',['id'=>$row->id, 'user'=> $this->cabinetService->getViewUserId(), 'viewAdminCabinet'=> $this->cabinetService->getViewAdminCabinet()]))->with('success', __('Hotel created') );
+                return redirect(route('hotel.vendor.edit',['id'=>$row->id, 'user'=> $this->cabinetService->getViewUser(), 'viewAdminCabinet'=> $this->cabinetService->getViewAdminCabinet()]))->with('success', __('Hotel created') );
             }
         }
+
+        return back()->with('danger', __('Unable to save hotel'));
     }
 
     public function saveTerms($row, $request)
@@ -261,13 +259,7 @@ class VendorController extends FrontendController
         $this->checkPermission('hotel_update');
         $cabinetData = $this->cabinetService->getCabinetData();
 
-        if ($this->cabinetService->getViewAdminCabinet()) {
-            $row = $this->hotelClass::where("admin_base", $this->cabinetService->getViewUserId());
-        } else {
-            $row = $this->hotelClass::where("admin_base", Auth::id());
-        }
-
-        $row = $row->find($id);
+        $row = $this->applyCabinetHotelFilter($this->hotelClass::query())->find($id);
 
         if (empty($row)) {
             return redirect(route('hotel.vendor.index'))->with('warning', __('Space not found!'));
@@ -308,11 +300,7 @@ class VendorController extends FrontendController
                 $query->forceDelete();
             }
         }else {
-            if ($this->cabinetService->getViewAdminCabinet()) {
-                $hotel = $query->where('admin_base', $this->cabinetService->getViewUserId())->where("id", $id)->first();
-            } else {
-                $hotel = $query->where("admin_base", Auth::id())->where("id", $id)->first();
-            }
+            $hotel = $this->applyCabinetHotelFilter($query)->where("id", $id)->first();
 
             if (!empty($hotel)) {
                 $hotel->delete();
@@ -339,13 +327,7 @@ class VendorController extends FrontendController
         $action = $request->input('action');
         $cabinetData = $this->cabinetService->getCabinetData();
 
-        $query = $this->hotelClass::query();
-
-        if ($this->cabinetService->getViewAdminCabinet()) {
-            $hotel = $query->where('admin_base', $this->cabinetService->getViewUserId())->where("id", $id)->first();
-        } else {
-            $hotel = $query->where("admin_base", Auth::id())->where("id", $id)->first();
-        }
+        $hotel = $this->applyCabinetHotelFilter($this->hotelClass::query())->where("id", $id)->first();
         if (empty($id)) {
             return redirect()->back()->with('error', __('No item!'));
         }
@@ -406,23 +388,40 @@ class VendorController extends FrontendController
         if (!$authUser) {
             return redirect()->back()->with('error', 'You are not logged in');
         }
+
         $user = User::find($id);
-        $view = 'User::frontend.dashboardBaseAdmin';
-        $data = $this->getBaseAdminDashboardData($user);
+        if (!$user) {
+            return redirect()->back()->with('error', __('User not found'));
+        }
+
+        $data = $this->dashboardService->getBaseAdminData($this->booking, $user);
+        $data['recent_bookings'] = $data['recent_bookings'] ?? collect();
+        $data['top_cards'] = $data['top_cards'] ?? [];
+        $data['earning_chart_data'] = $data['earning_chart_data'] ?? [];
         $data['user'] = $user;
-        $data['isAdmin'] = $authUser->hasRole('administrator');
+        $data['isAdmin'] = is_admin();
         $data['viewAdminCabinet'] = true;
-        return view($view, $data);
-    }
-    protected function getBaseAdminDashboardData($user)
-    {
-        return [
-            'cards_report'       => $this->booking->getTopCardsReportForBaseAdmin($user->id),
-            'earning_chart_data' => $this->booking->getEarningChartDataForVendor(strtotime('monday this week'), time(), $user->id),
-            'page_title'         => __("BaseAdmin Dashboard"),
-            'breadcrumbs'        => [
-                ['name' => __('Dashboard'), 'class' => 'active']
-            ]
+        $data['page_title'] = __("BaseAdmin Dashboard");
+        $data['breadcrumbs'] = [
+            ['name' => __('Dashboard'), 'class' => 'active']
         ];
+
+        return view('User::frontend.dashboardBaseAdmin', $data);
+    }
+
+    protected function applyCabinetHotelFilter($query)
+    {
+        if ($this->cabinetService->getViewAdminCabinet()) {
+            $query->where('admin_base', $this->cabinetService->getViewUser());
+        } else {
+            $query->where(function ($q) {
+                $q->where('admin_base', Auth::id())
+                    ->orWhere(function ($q2) {
+                        $q2->whereNull('admin_base')->where('author_id', Auth::id());
+                    });
+            });
+        }
+
+        return $query;
     }
 }
