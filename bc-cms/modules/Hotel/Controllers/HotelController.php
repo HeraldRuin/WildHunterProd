@@ -297,7 +297,36 @@ class HotelController extends Controller
         });
     }
 
-    public function detail(Request $request, $slug)
+    public function detail(Request $request, $location_slug, $slug)
+    {
+        $row = $this->findHotelBySlug($slug);
+        if ( empty($row) or !$row->hasPermissionDetailView()) {
+            return redirect('/');
+        }
+
+        $expectedLocationSlug = $row->getUrlLocationSlug();
+        if (empty($expectedLocationSlug) || $location_slug !== $expectedLocationSlug) {
+            return redirect($row->getDetailUrl(false), 301);
+        }
+
+        return $this->renderDetail($request, $row);
+    }
+
+    public function detailLegacy(Request $request, $slug)
+    {
+        $row = $this->findHotelBySlug($slug);
+        if ( empty($row) or !$row->hasPermissionDetailView()) {
+            return redirect('/');
+        }
+
+        if (!empty($row->getUrlLocationSlug())) {
+            return redirect($row->getDetailUrl(false), 301);
+        }
+
+        return $this->renderDetail($request, $row);
+    }
+
+    protected function findHotelBySlug($slug)
     {
         $query = $this->hotelClass::with(['location','translation','hasWishList'])
             ->where('slug', $slug);
@@ -306,12 +335,12 @@ class HotelController extends Controller
             $query->withTrashed();
         }
 
-        $row = $query->first();
+        return $query->first();
+    }
 
+    protected function renderDetail(Request $request, $row)
+    {
         $hotelId = $row->id;
-        if ( empty($row) or !$row->hasPermissionDetailView()) {
-            return redirect('/');
-        }
 
         $adminbar_buttons = [];
 
