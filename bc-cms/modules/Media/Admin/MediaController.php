@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Modules\Media\Helpers\FileHelper;
 use Modules\Media\Models\MediaFile;
+use Modules\Media\Models\MediaFolder;
 use Modules\Media\Resources\MediaResource;
 use Modules\Media\Traits\HasUpload;
 
