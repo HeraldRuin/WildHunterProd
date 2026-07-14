@@ -4,6 +4,7 @@
 namespace Modules\User\Controllers;
 
 
+use App\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Auth\ResetsPasswords;
@@ -37,24 +38,33 @@ class PasswordController extends FrontendController
                 ]
             ],
             'page_title'  => __("Change Password"),
-            'current_password' => $this->getDecryptedCurrentPassword(Auth::user()),
+            'current_password' => $this->getDecryptedCurrentPassword(Auth::id()),
         ];
 
         return view('User::frontend.changePassword', $data);
     }
 
-    private function getDecryptedCurrentPassword($user): ?string
+    private function getDecryptedCurrentPassword(?int $userId): ?string
     {
-        if (empty($user->current_password)) {
+        if (!$userId) {
+            return null;
+        }
+
+        $encrypted = User::query()
+            ->whereKey($userId)
+            ->value('current_password');
+
+        if (empty($encrypted)) {
             return null;
         }
 
         try {
-            return Crypt::decryptString($user->current_password);
+            return Crypt::decryptString($encrypted);
         } catch (DecryptException $e) {
             Log::warning('Failed to decrypt current_password', [
-                'user_id' => $user->id,
+                'user_id' => $userId,
                 'message' => $e->getMessage(),
+                'length'  => strlen($encrypted),
             ]);
 
             return null;
