@@ -4,6 +4,8 @@
 namespace Modules\User\Controllers;
 
 
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +25,6 @@ class PasswordController extends FrontendController
 
     public function changePassword(Request $request)
     {
-        $user = Auth::user();
         $data = [
             'breadcrumbs' => [
                 [
@@ -36,11 +37,28 @@ class PasswordController extends FrontendController
                 ]
             ],
             'page_title'  => __("Change Password"),
+            'current_password' => $this->getDecryptedCurrentPassword(Auth::user()),
         ];
 
-        $data['current_password'] = Crypt::decryptString($user->current_password) ?? null;
-
         return view('User::frontend.changePassword', $data);
+    }
+
+    private function getDecryptedCurrentPassword($user): ?string
+    {
+        if (empty($user->current_password)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($user->current_password);
+        } catch (DecryptException $e) {
+            Log::warning('Failed to decrypt current_password', [
+                'user_id' => $user->id,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 
     public function changePasswordUpdate(Request $request)
@@ -50,14 +68,8 @@ class PasswordController extends FrontendController
         }
         $user = Auth::user();
 
-        if (!(Hash::check(Crypt::decryptString($user->current_password), Auth::user()->password))) {
-            // The passwords matches
-            return redirect()->back()->with("error", __("Your current password does not matches with the password you provided. Please try again."));
-        }
-        if (strcmp(Crypt::decryptString($user->current_password), $request->get('new-password')) == 0) {
-            return redirect()->back()->with("error", __("New Password cannot be same as your current password. Please choose a different password."));
-        }
         $request->validate([
+            'current-password' => ['required', 'string'],
             'new-password'     => [
                 'required',
                 'string',
@@ -68,12 +80,21 @@ class PasswordController extends FrontendController
                 'confirmed',
             ],
         ]);
-        //Change Password
-        $user = Auth::user();
-        $this->resetPassword($user, $request->input('new-password'));
+
+        if (!Hash::check($request->input('current-password'), $user->password)) {
+            return redirect()->back()->with("error", __("Your current password does not matches with the password you provided. Please try again."));
+        }
+
+        if ($request->input('current-password') === $request->input('new-password')) {
+            return redirect()->back()->with("error", __("New Password cannot be same as your current password. Please choose a different password."));
+        }
+
+        $this->setUserPassword($user, $request->input('new-password'));
+        $user->save();
+        event(new PasswordReset($user));
 
         try {
-            event(new SendMailUserUpdatePassword($user));
+            event(new SendMailUserUpdatePassword($user, $request->input('new-password')));
 
         } catch (Exception $exception) {
 
