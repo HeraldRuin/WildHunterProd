@@ -10,7 +10,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>{{__("Current Password")}}</label>
-                    <input type="password" required name="current-password" id="old-password" placeholder="{{__("Current Password")}}" value="{{ $current_password }}" class="form-control">
+                    <input type="password" required name="current-password" id="old-password" placeholder="{{__("Current Password")}}" value="{{ old('current-password', $current_password ?? '') }}" @if(!empty($current_password) && !old('current-password')) data-prefill-password="{{ e($current_password) }}" @endif class="form-control">
                     <i class="toggle-change-password icofont-eye-blocked" id="toggle-change-password-icon-old"></i>
                 </div>
                 <div class="form-group">
@@ -34,5 +34,17 @@
     </form>
 @endsection
 @push('js')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var input = document.getElementById('old-password');
+    if (!input || input.value) {
+        return;
+    }
 
+    var prefill = input.getAttribute('data-prefill-password');
+    if (prefill) {
+        input.value = prefill;
+    }
+});
+</script>
 @endpush
