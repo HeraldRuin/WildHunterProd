@@ -2,7 +2,9 @@
 
 namespace Modules\Hotel\Requests;
 
-class StoreRoomDateRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreRoomDateRequest extends FormRequest
 {
     public function authorize(): bool
     {
