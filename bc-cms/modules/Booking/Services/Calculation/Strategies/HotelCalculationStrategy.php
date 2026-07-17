@@ -20,13 +20,6 @@ class HotelCalculationStrategy implements BookingCalculationStrategy
         $paidCount = $data['paidCount'];
         $isBaseAdmin = $data['isBaseAdmin'];
 
-        if ($data['paidCount'] <= 0) {
-            return [
-                'success' => false,
-                'message' => 'no_paid_participants',
-            ];
-        }
-
         // === Дополнительные услуги ===
         $addetionals = $this->bookingCalculator->calculateAdditional(collect($grouped['addetional'] ?? []), $user, $paidCount);
 

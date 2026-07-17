@@ -11,7 +11,7 @@ class BookingDataBuilder
     {
         $services = BookingService::with(['hunter', 'animal'])->where('booking_id', $booking->id)->get();
 
-        $paidCount = $booking->countAcceptedAndPaidHunters();
+        $paidCount = $booking->getCalculationParticipantsCount();
         $totalHunting = $booking->countAcceptedHunters();
 
         return [

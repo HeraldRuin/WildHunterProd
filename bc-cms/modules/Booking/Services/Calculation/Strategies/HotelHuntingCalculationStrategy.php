@@ -20,13 +20,6 @@ class HotelHuntingCalculationStrategy implements BookingCalculationStrategy
         $paidCount = $data['paidCount'];
         $isBaseAdmin = $data['isBaseAdmin'];
 
-        if ($data['paidCount'] <= 0) {
-            return [
-                'success' => false,
-                'message' => 'no_paid_participants',
-            ];
-        }
-
         // === Трофеи ===
         $trophies = $this->bookingCalculator->calculateTrophies(collect($grouped['trophy'] ?? []), $paidCount);
 

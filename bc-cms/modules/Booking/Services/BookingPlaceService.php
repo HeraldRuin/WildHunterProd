@@ -104,10 +104,10 @@ class BookingPlaceService
 
     public function updateStatusIfAllPlacesSelected(Booking $booking): void
     {
-        $paidCount = $booking->countAcceptedAndPaidHunters();
-        $alreadyHasPlace = BookingRoomPlace::where('booking_id', $booking->id)->count() === $paidCount;
+        $participantsCount = $booking->getCalculationParticipantsCount();
+        $alreadyHasPlace = BookingRoomPlace::where('booking_id', $booking->id)->count() === $participantsCount;
 
-        if ($paidCount > 0 && $paidCount === $alreadyHasPlace) {
+        if ($participantsCount > 0 && $participantsCount === $alreadyHasPlace) {
             $booking->status = Booking::FINISHED_BED;
             $booking->save();
         }

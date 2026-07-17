@@ -1691,6 +1691,15 @@ class Booking extends BaseModel
     }
 
     /**
+     * Количество участников для калькуляции.
+     * Оплачивает только создатель брони — считаем по total_guests.
+     */
+    public function getCalculationParticipantsCount(): int
+    {
+        return max((int) ($this->total_guests ?? 0), 1);
+    }
+
+    /**
      * Количество охотников, которые приняли приглашение и оплатили предоплату
      */
     public function countAcceptedAndPaidHunters(): int
