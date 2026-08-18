@@ -4,14 +4,26 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('libs/ion_rangeslider/css/ion.rangeSlider.min.css') }}" />
 @endpush
 @section('content')
+    @php
+        $bg = setting_item('hotel_page_search_banner');
+        $homePageId = setting_item('home_page_id');
+        if ($homePageId) {
+            $homePage = \Modules\Page\Models\Page::with('template')->find($homePageId);
+            $homeBlocks = json_decode($homePage?->template?->content ?? '[]', true) ?: [];
+            foreach ($homeBlocks as $block) {
+                if (($block['type'] ?? null) !== 'form_search_all_service') {
+                    continue;
+                }
+                $bg = $block['model']['list_slider'][0]['bg_image']
+                    ?? $block['model']['bg_image']
+                    ?? $bg;
+                break;
+            }
+        }
+    @endphp
     <div class="bc_search_hotel">
         <div class="bc_banner"
-            @if ($bg = setting_item('hotel_page_search_banner')) style="background-image: url({{ get_file_url($bg, 'full') }})" @endif>
-            <div class="container">
-                <h1>
-                    {{ setting_item_with_lang('hotel_page_search_title') }}
-                </h1>
-            </div>
+            style="min-height: 280px;@if ($bg) background-image: linear-gradient(0deg,rgba(0, 0, 0, 0.2),rgba(0, 0, 0, 0.2)),url({{ get_file_url($bg, 'full') }});@endif">
         </div>
         <div class="bc_form_search">
             <div class="container">
