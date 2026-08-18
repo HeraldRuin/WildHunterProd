@@ -130,7 +130,7 @@ class HotelController extends Controller
                 "markers" => $markers,
                 'fragments'=>[
                     '.ajax-search-result'=>view('Hotel::frontend.ajax.search-result'.($for_map ? '-map' : ''), $data)->render(),
-                    '.result-count'=>$list->total() > 1 ? __(":count hotels found",['count'=>$list->total()]) : __(":count hotel found",['count'=>$list->total()]),
+                    '.result-count'=> plural_hotels_found($list->total()),
                     '.count-string'=> $list->total() ? __("Showing :from - :to of :total Hotels",["from"=>$list->firstItem(),"to"=>$list->lastItem(),"total"=>$list->total()]) : ''
                 ]
             ]);

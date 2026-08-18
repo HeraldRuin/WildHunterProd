@@ -2,11 +2,7 @@
     @if($rows->count())
         <div class="text-paginate">
             <h2 class="text result-count">
-                @if($rows->total() > 1)
-                    {{ __(":count hotels found",['count'=>$rows->total()]) }}
-                @else
-                    {{ __(":count hotel found",['count'=>$rows->total()]) }}
-                @endif
+                {{ plural_hotels_found($rows->total()) }}
             </h2>
             <span class="count-string">{{ __("Showing :from - :to of :total Hotels",["from"=>$rows->firstItem(),"to"=>$rows->lastItem(),"total"=>$rows->total()]) }}</span>
         </div>

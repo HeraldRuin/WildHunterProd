@@ -6,11 +6,7 @@
         <div class="bc-list-item">
             <div class="topbar-search">
                 <h2 class="text result-count">
-                    @if($rows->total() > 1)
-                        {{ __(":count hotels found",['count'=>$rows->total()]) }}
-                    @else
-                        {{ __(":count hotel found",['count'=>$rows->total()]) }}
-                    @endif
+                    {{ plural_hotels_found($rows->total()) }}
                 </h2>
                 <div class="control bc-form-order">
                     @include('Layout::global.search.orderby',['routeName'=>'hotel.search'])

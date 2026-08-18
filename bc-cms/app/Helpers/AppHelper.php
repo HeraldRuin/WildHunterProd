@@ -1262,6 +1262,29 @@ function plural_sutki(int $count): string
 
     return $count . ' суток';
 }
+
+function plural_hotels_found(int $count): string
+{
+    if (app()->getLocale() !== 'ru') {
+        return $count > 1
+            ? __(":count hotels found", ['count' => $count])
+            : __(":count hotel found", ['count' => $count]);
+    }
+
+    $count = abs($count);
+    $mod100 = $count % 100;
+    $mod10 = $count % 10;
+
+    if ($mod100 >= 11 && $mod100 <= 19) {
+        return $count . ' отелей найдено';
+    }
+
+    return match ($mod10) {
+        1 => $count . ' отель найден',
+        2, 3, 4 => $count . ' отеля найдено',
+        default => $count . ' отелей найдено',
+    };
+}
 function clean_decimal($value): string
 {
     $value = (float)$value;
