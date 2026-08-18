@@ -3278,26 +3278,60 @@ body .bravo_wrap .bravo_detail_tour .bravo_content .bravo_tour_book .attr-bookin
     cursor: pointer
 }
 /*
- * Homepage (header-transparent): restore button offset that was removed from app.css.
- * Hotel page uses the block below and must keep padding-top: 0.
+ * Homepage (header-transparent) and inner pages (header-normal, e.g. hotels):
+ * overlay header on the topbar so logo and login/register sit on one compact bar.
  */
 @media (min-width: 1023px) {
-    .frontend-page.header-transparent .bc_wrap .bc_topbar .content .topbar-right {
+    .frontend-page.header-transparent .bc_wrap .bc_topbar .content .topbar-right,
+    .frontend-page.header-normal .bc_wrap .bc_topbar .content .topbar-right {
         padding-top: 10px;
+    }
+
+    .frontend-page.header-normal .bc_wrap {
+        position: relative;
+    }
+
+    .frontend-page.header-normal .bc_wrap .bc_topbar {
+        position: relative;
+        height: 165px;
+        width: 100%;
+        z-index: 1;
+        background-color: #fff;
+    }
+
+    .frontend-page.header-normal .bc_wrap .bc_header {
+        position: absolute;
+        top: 65px;
+        z-index: 10;
+        width: 100%;
+        background: transparent;
+        border-bottom: none;
+    }
+
+    .frontend-page.header-normal .bc_wrap .bc_header .content {
+        background: transparent;
     }
 }
 
 .frontend-page.header-transparent .bc_wrap .bc_header,
 .frontend-page.header-transparent .bc_wrap .bc_header .content,
 .frontend-page.header-transparent .bc_wrap .bc_header .header-left,
-.frontend-page.header-transparent .bc_wrap .bc_header .logo-center-wrapper {
+.frontend-page.header-transparent .bc_wrap .bc_header .logo-center-wrapper,
+.frontend-page.header-normal .bc_wrap .bc_header,
+.frontend-page.header-normal .bc_wrap .bc_header .content,
+.frontend-page.header-normal .bc_wrap .bc_header .header-left,
+.frontend-page.header-normal .bc_wrap .bc_header .logo-center-wrapper {
     pointer-events: none;
 }
 
 .frontend-page.header-transparent .bc_wrap .bc_header .bc-logo,
 .frontend-page.header-transparent .bc_wrap .bc_header .bc-menu,
 .frontend-page.header-transparent .bc_wrap .bc_header .header-right,
-.frontend-page.header-transparent .bc_wrap .bc_header .bc-more-menu {
+.frontend-page.header-transparent .bc_wrap .bc_header .bc-more-menu,
+.frontend-page.header-normal .bc_wrap .bc_header .bc-logo,
+.frontend-page.header-normal .bc_wrap .bc_header .bc-menu,
+.frontend-page.header-normal .bc_wrap .bc_header .header-right,
+.frontend-page.header-normal .bc_wrap .bc_header .bc-more-menu {
     pointer-events: auto;
 }
 @media (max-width: 766px) {
