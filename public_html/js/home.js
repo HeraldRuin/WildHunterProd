@@ -334,15 +334,17 @@ jQuery(function ($) {
     });
 
     $(".bc-list-locations").each(function () {
-        var $carousel = $(this).find(".owl-carousel");
+        var $block = $(this);
+        var $carousel = $block.find(".owl-carousel");
         if (!$carousel.length) {
             return;
         }
+        var itemCount = $carousel.find(".destination-item").length;
         $carousel.owlCarousel({
             items: 4,
             loop: false,
             margin: 15,
-            nav: $carousel.children().length > 4,
+            nav: itemCount > 4,
             responsive: {
                 0: {
                     items: 1

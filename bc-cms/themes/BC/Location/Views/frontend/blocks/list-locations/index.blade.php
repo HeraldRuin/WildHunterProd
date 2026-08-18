@@ -1,5 +1,5 @@
 <div class="container">
-    <div class="bc-list-locations @if(!empty($layout)) {{ $layout }} @endif">
+    <div class="bc-list-locations @if(!empty($layout)) {{ $layout }} @endif @if($rows->count() > 4) has-slider-nav @endif">
         <div class="title">
             {{$title}}
         </div>

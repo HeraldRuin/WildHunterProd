@@ -164,7 +164,8 @@ class ListLocations extends BaseBlock
             'desc'         => $model['desc'] ?? "",
             'service_type' => $model['service_type'],
             'layout'       => !empty($model['layout']) ? $model['layout'] : "style_1",
-            'to_location_detail'=>$model['to_location_detail'] ?? ''
+            'to_location_detail'=>$model['to_location_detail'] ?? '',
+            'number'       => (int) ($model['number'] ?: 5),
         ];
         return $this->view('Location::frontend.blocks.list-locations.index', $data);
     }
@@ -189,10 +190,9 @@ class ListLocations extends BaseBlock
             $ids = $model['custom_ids'];
             $model_location->whereIn("id", $ids);
             $model_location->orderByRaw('FIELD (id, ' . implode(', ', $ids) . ') ASC');
-            $limit = count($ids);
         }else{
             $model_location->orderBy($model['order'], $model['order_by']);
         }
-        return $model_location->limit($limit ?? $model['number'])->get();
+        return $model_location->limit($model['number'])->get();
     }
 }

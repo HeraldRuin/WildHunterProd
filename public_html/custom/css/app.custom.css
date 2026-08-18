@@ -25,14 +25,18 @@ body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev span, body .bravo_wrap
 }
 
 .bc_wrap .bc-list-locations .owl-nav {
+    display: none !important;
+}
+
+.bc_wrap .bc-list-locations.has-slider-nav .owl-nav {
     position: absolute;
     right: 0;
     top: -50px;
     display: block !important;
 }
 
-.bc_wrap .page-template-content .bc-list-locations .title,
-.bc_wrap .bc-list-locations .title {
+.bc_wrap .page-template-content .bc-list-locations.has-slider-nav .title,
+.bc_wrap .bc-list-locations.has-slider-nav .title {
     padding-right: 110px;
 }
 
@@ -57,7 +61,7 @@ body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev span, body .bravo_wrap
 }
 
 @media (max-width: 766px) {
-    .bc_wrap .bc-list-locations .owl-nav {
+    .bc_wrap .bc-list-locations.has-slider-nav .owl-nav {
         position: relative;
         top: -15px;
         margin: 0;
