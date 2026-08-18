@@ -7,7 +7,8 @@ body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev, body .bravo_wrap .bra
     line-height: 33px;
     border: solid 1px #000;
     padding: 0px 10px !important;
-    margin-left: 10px
+    margin-left: 10px;
+    outline: none !important
 }
 
 body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev span, body .bravo_wrap .bravo-list-locations .owl-nav .owl-next span {
@@ -47,6 +48,7 @@ body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev span, body .bravo_wrap
     border: solid 1px #000;
     padding: 0px 10px !important;
     margin-left: 10px;
+    outline: none !important;
 }
 
 .bc_wrap .bc-list-locations .owl-nav .owl-prev span,
