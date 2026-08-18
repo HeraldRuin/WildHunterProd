@@ -333,6 +333,30 @@ jQuery(function ($) {
         })
     });
 
+    $(".bc-list-locations").each(function () {
+        var $carousel = $(this).find(".owl-carousel");
+        if (!$carousel.length) {
+            return;
+        }
+        $carousel.owlCarousel({
+            items: 4,
+            loop: false,
+            margin: 15,
+            nav: $carousel.children().length > 4,
+            responsive: {
+                0: {
+                    items: 1
+                },
+                768: {
+                    items: 2
+                },
+                1000: {
+                    items: 4
+                }
+            }
+        })
+    });
+
     $(".bc-list-car").each(function () {
         $(this).find(".owl-carousel").owlCarousel({
             items: 4,

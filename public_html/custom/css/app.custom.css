@@ -16,6 +16,56 @@ body .bravo_wrap .bravo-list-locations .owl-nav .owl-prev span, body .bravo_wrap
     outline: none !important
 }
 
+.bc_wrap .bc-list-locations {
+    position: relative;
+}
+
+.bc_wrap .bc-list-locations .owl-dots {
+    display: none;
+}
+
+.bc_wrap .bc-list-locations .owl-nav {
+    position: absolute;
+    right: 0;
+    top: -50px;
+    display: block !important;
+}
+
+.bc_wrap .page-template-content .bc-list-locations .title,
+.bc_wrap .bc-list-locations .title {
+    padding-right: 110px;
+}
+
+.bc_wrap .bc-list-locations .owl-nav .owl-prev,
+.bc_wrap .bc-list-locations .owl-nav .owl-next {
+    font-size: 40px;
+    line-height: 33px;
+    border: solid 1px #000;
+    padding: 0px 10px !important;
+    margin-left: 10px;
+}
+
+.bc_wrap .bc-list-locations .owl-nav .owl-prev span,
+.bc_wrap .bc-list-locations .owl-nav .owl-next span {
+    position: relative;
+    top: -1px;
+    outline: none !important;
+}
+
+.bc_wrap .bc-list-locations .owl-carousel .destination-item {
+    margin-bottom: 0;
+}
+
+@media (max-width: 766px) {
+    .bc_wrap .bc-list-locations .owl-nav {
+        position: relative;
+        top: -15px;
+        margin: 0;
+        text-align: center;
+        display: block !important;
+    }
+}
+
 body .bravo_wrap .bravo_search_tour .bravo_banner {
     background-color: #fff
 }
