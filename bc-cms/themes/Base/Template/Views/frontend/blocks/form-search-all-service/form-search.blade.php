@@ -1,6 +1,6 @@
 @if (empty($hide_form_search))
     <div class="g-form-control">
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs" role="tablist" style="visibility: hidden; pointer-events: none;">
             @if (!empty($service_types))
                 @php $number = 0; @endphp
                 @foreach ($service_types as $service_type)
