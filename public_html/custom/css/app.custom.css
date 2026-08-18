@@ -3555,4 +3555,99 @@ body .bravo_wrap .bravo_detail_tour .bravo_content .g-faq2 .item .desc {
     }
 }
 
+.blog-content ol,
+.blog-content ul {
+    padding-left: 1.5em;
+    margin-bottom: 1rem;
+}
+
+.container:has(.legal-docx) > h1 {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14pt;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 12pt;
+    color: #000;
+}
+
+.legal-docx {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.15;
+    color: #000;
+}
+
+.legal-docx p {
+    margin: 0 0 8pt;
+}
+
+.legal-docx p.legal-docx__tight {
+    margin-bottom: 0;
+}
+
+.legal-docx .legal-docx__title {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 14pt;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 24pt 0;
+    color: #000;
+}
+
+.legal-docx .legal-docx__heading {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 24pt 0;
+    color: #000;
+}
+
+.legal-docx .legal-docx__toc {
+    margin: 0 0 8pt;
+    padding-left: 36pt;
+    list-style: decimal;
+    list-style-position: outside;
+}
+
+.legal-docx .legal-docx__toc li {
+    margin: 0;
+    padding: 0;
+}
+
+.legal-docx .legal-docx__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12pt 0 24pt;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+}
+
+.legal-docx .legal-docx__table th,
+.legal-docx .legal-docx__table td {
+    border: 1px solid #000;
+    padding: 6pt 8pt;
+    vertical-align: top;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+}
+
+.legal-docx .legal-docx__table th {
+    font-weight: 700;
+    text-align: left;
+}
+
+.legal-docx .legal-docx__table td:first-child {
+    width: 38%;
+}
+
+.legal-docx .legal-docx__bullets {
+    margin: 0;
+    padding-left: 1.2em;
+}
+
+.legal-docx .legal-docx__bullets li {
+    margin: 0;
+}
+
 /*# sourceMappingURL=app.custom.css.map */
