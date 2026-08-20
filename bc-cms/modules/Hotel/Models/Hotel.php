@@ -1117,8 +1117,14 @@ class Hotel extends Bookable
             $model_hotel->whereBetween('bc_hotels.price', [$pri_from, $pri_to]);
         }
 
-        if (!empty($star_rate = $request['star_rate'] ?? "")) {
-            $model_hotel->WhereIn('star_rate', $star_rate);
+        $star_rates = $request['star_rate'] ?? "";
+        if (is_array($star_rates)) $star_rates = array_filter($star_rates);
+        if (!empty($star_rates) && count($star_rates)) {
+            $model_hotel->where(function ($q) use ($star_rates) {
+                foreach ($star_rates as $rate) {
+                    $q->orWhereBetween('bc_hotels.star_rate', [$rate, $rate . '.9']);
+                }
+            });
         }
 
         if ($term_id = $request['term_id'] ?? "") {
