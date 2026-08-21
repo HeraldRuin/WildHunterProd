@@ -189,9 +189,9 @@ class HotelController extends AdminController
             ->whereNotIn('id', function ($query) {
                 $query->select('admin_base')
                     ->from('bc_hotels')
-                    ->whereNotNull('admin_base');
-            })
-            ->get();
+                    ->whereNotNull('admin_base')
+                    ->where('status', 'draft');
+            })->get();
 
         $assignedAdmin = null;
 
@@ -253,10 +253,21 @@ class HotelController extends AdminController
             'image_id',
             'banner_image_id',
             'gallery',
+            'gallery_folders',
+            'gallery_food',
+            'gallery_entertainment',
+            'gallery_amenities',
             'is_featured',
             'policy',
             'location_id',
             'address',
+            'how_to_get',
+            'nearby_city',
+            'nearby_city_distance',
+            'nearby_airport',
+            'nearby_airport_distance',
+            'nearby_station',
+            'nearby_station_distance',
             'map_lat',
             'map_lng',
             'map_zoom',
@@ -300,7 +311,10 @@ class HotelController extends AdminController
             if($id > 0 ){
                 event(new UpdatedServiceEvent($row));
 
-                return back()->with('success',  __('Hotel updated') );
+                return redirect(route('hotel.admin.edit', array_filter([
+                    'id' => $row->id,
+                    'lang' => $request->input('lang') ?: $request->query('lang'),
+                ])))->with('success',  __('Hotel updated') );
             }else{
                 event(new CreatedServicesEvent($row));
 
@@ -436,6 +450,28 @@ class HotelController extends AdminController
                 break;
         }
     }
+
+    public function saveGalleryFolders(Request $request, $id)
+    {
+        if (is_demo_mode()) {
+            return $this->sendError(__("DEMO MODE: can not add data"));
+        }
+
+        $this->checkPermission('hotel_update');
+        $row = $this->hotelClass::find($id);
+        if (empty($row)) {
+            return $this->sendError(__("Hotel not found"));
+        }
+
+        if ($row->author_id != Auth::id() and !$this->hasPermission('hotel_manage_others')) {
+            return $this->sendError(__("You are not allowed to edit this hotel"));
+        }
+
+        $row->saveGalleryFolderList($request->input('gallery_folders'));
+
+        return $this->sendSuccess([], __('Folder saved'));
+    }
+
     public function getForSelect2(Request $request)
     {
         $pre_selected = $request->query('pre_selected');

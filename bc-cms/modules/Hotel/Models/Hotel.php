@@ -27,6 +27,7 @@ use Modules\Core\Models\SEO;
 use Modules\Core\Models\Terms;
 use Modules\Hotel\Services\HotelAvailabilityService;
 use Modules\Location\Models\Location;
+use Modules\Media\Helpers\FileHelper;
 use Modules\Review\Models\Review;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\User\Models\UserWishList;
@@ -125,6 +126,58 @@ class Hotel extends Bookable
         $meta['seo_share'] = setting_item_with_lang("hotel_page_list_seo_share");
         $meta['full_url'] = url()->current();
         return $meta;
+    }
+
+    public function galleryTypeMap(): array
+    {
+        return [
+            'gallery' => [
+                'type' => 'territory',
+                'label' => __('Territory gallery'),
+            ],
+            'gallery_food' => [
+                'type' => 'food',
+                'label' => __('Food gallery'),
+            ],
+            'gallery_entertainment' => [
+                'type' => 'entertainment',
+                'label' => __('Entertainment gallery'),
+            ],
+            'gallery_amenities' => [
+                'type' => 'amenities',
+                'label' => __('Amenities gallery'),
+            ],
+        ];
+    }
+
+    public function getTypedGalleries(): array
+    {
+        $result = [];
+        foreach ($this->galleryTypeMap() as $field => $meta) {
+            $items = [];
+            $ids = array_filter(array_map('trim', explode(',', (string) ($this->{$field} ?? ''))));
+            foreach ($ids as $id) {
+                $large = FileHelper::url($id, 'full');
+                $thumb = FileHelper::url($id, 'thumb');
+                if (empty($large)) {
+                    continue;
+                }
+                $items[] = [
+                    'id' => $id,
+                    'type' => $meta['type'],
+                    'large' => $large,
+                    'thumb' => $thumb,
+                ];
+            }
+            $result[] = [
+                'type' => $meta['type'],
+                'field' => $field,
+                'label' => $meta['label'],
+                'items' => $items,
+            ];
+        }
+
+        return $result;
     }
 
     public function terms()
@@ -1384,5 +1437,36 @@ class Hotel extends Bookable
     public function adminBase(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_base');
+    }
+
+    public function saveGalleryFolderList($folders)
+    {
+        if (is_string($folders)) {
+            $decoded = json_decode($folders, true);
+            $folders = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+        }
+        if (!is_array($folders)) {
+            $folders = [];
+        }
+
+        $clean = [];
+        foreach ($folders as $folder) {
+            if (!is_array($folder)) {
+                continue;
+            }
+            $id = trim((string)($folder['id'] ?? ''));
+            if ($id === '') {
+                continue;
+            }
+            $clean[] = [
+                'id' => $id,
+                'name' => (string)($folder['name'] ?? ''),
+                'images' => (string)($folder['images'] ?? ''),
+            ];
+        }
+
+        $this->gallery_folders = json_encode($clean, JSON_UNESCAPED_UNICODE);
+
+        return $this->save();
     }
 }

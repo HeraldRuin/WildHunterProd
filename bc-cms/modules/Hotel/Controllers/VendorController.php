@@ -184,10 +184,20 @@ class VendorController extends FrontendController
             'image_id',
             'banner_image_id',
             'gallery',
+            'gallery_food',
+            'gallery_entertainment',
+            'gallery_amenities',
             'is_featured',
             'policy',
             'location_id',
             'address',
+            'how_to_get',
+            'nearby_city',
+            'nearby_city_distance',
+            'nearby_airport',
+            'nearby_airport_distance',
+            'nearby_station',
+            'nearby_station_distance',
             'map_lat',
             'map_lng',
             'map_zoom',
@@ -308,6 +318,23 @@ class VendorController extends FrontendController
             }
         }
         return redirect(route('hotel.vendor.index',['user'=> $this->cabinetService->getViewUserId(), 'viewAdminCabinet'=> $this->cabinetService->getViewAdminCabinet()]))->with('success', __('Delete hotel success!') );
+    }
+
+    public function saveGalleryFolders(Request $request, $id)
+    {
+        if (is_demo_mode()) {
+            return $this->sendError(__("DEMO MODE: Disable setting update"));
+        }
+
+        $this->checkPermission('hotel_update');
+        $row = $this->applyCabinetHotelFilter($this->hotelClass::query())->where('id', $id)->first();
+        if (empty($row)) {
+            return $this->sendError(__("Hotel not found"));
+        }
+
+        $row->saveGalleryFolderList($request->input('gallery_folders'));
+
+        return $this->sendSuccess([], __('Folder saved'));
     }
 
     public function restore($id)

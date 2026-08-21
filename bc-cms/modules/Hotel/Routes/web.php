@@ -16,6 +16,7 @@ Route::group(['prefix'=>'user/'.config('hotel.hotel_route_prefix'),'middleware' 
     Route::get('/del/{id}', 'VendorController@delete')->name('hotel.vendor.delete')->middleware(['signed']);
     Route::post('/unassignAdmin/{id}','HotelController@unassignAdmin')->name('hotel.admin.unassignAdmin');
     Route::post('/store/{id}','VendorController@store')->name('hotel.vendor.store');
+    Route::post('/gallery-folders/{id}','VendorController@saveGalleryFolders')->name('hotel.vendor.galleryFolders');
     Route::get('bulkEdit/{id}', 'VendorController@bulkEdithotel')->name("hotel.vendor.bulk_edit")->middleware(['signed']);
     Route::get('/booking-report/bulkEdit/{id}','VendorController@bookingReportBulkEdit')->name("hotel.vendor.booking_report.bulk_edit");
     Route::group(['prefix'=>'availability'],function(){
