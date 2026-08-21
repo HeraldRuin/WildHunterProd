@@ -35,7 +35,7 @@
         @endif
     </div>
 </div>
-@include('Layout::global.details.gallery')
+@include('Hotel::frontend.layouts.details.hotel-galleries')
 @if($translation->content)
     <div class="g-overview">
         <h3>{{__("Description")}}</h3>
