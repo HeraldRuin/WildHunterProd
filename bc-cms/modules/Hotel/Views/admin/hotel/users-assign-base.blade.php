@@ -1,5 +1,7 @@
 <div class="panel">
-    <div class="panel-title"><strong>{{__('hotelAdmin.name.user_assign_base_tittle')}}</strong></div>
+    <div class="panel-title"><strong>{{__('hotelAdmin.name.user_assign_base_tittle')}}</strong>
+        <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+    </div>
     <div class="panel-body">
 
         @if($assignedAdmin)

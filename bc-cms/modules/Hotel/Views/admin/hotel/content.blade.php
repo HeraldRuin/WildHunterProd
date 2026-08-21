@@ -1,12 +1,138 @@
 <div class="panel">
-    <div class="panel-title"><strong>{{__("Hotel Content")}}</strong></div>
+    <div class="panel-title"><strong>{{__("General information")}}</strong>
+        @if($row->id)
+            <span class="ml-3">{{__("Object ID")}} <strong style="font-size: 18px; font-weight: 700;">{{ $row->id }}</strong></span>
+        @endif
+        <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+    </div>
     <div class="panel-body">
         <div class="form-group magic-field" data-id="title" data-type="title">
-            <label class="control-label">{{__("Title")}}</label>
+            <label class="control-label">{{__("Object name")}}</label>
             <input type="text" value="{{$translation->title}}" placeholder="{{__("Name of the hotel")}}" name="title" class="form-control">
         </div>
+        <div class="form-group">
+            <label class="control-label">{{__("Star rating")}}</label>
+            <div class="d-flex align-items-center">
+                <div class="hotel-star-rate-input">
+                    @for ($i = 5; $i >= 1; $i--)
+                        <input type="radio" id="hotel_star_{{ $i }}" name="star_rate" value="{{ $i }}" {{ (int) $row->star_rate === $i ? 'checked' : '' }}>
+                        <label for="hotel_star_{{ $i }}"><i class="fa fa-star"></i></label>
+                    @endfor
+                </div>
+                <button type="button" class="btn btn-sm btn-default hotel-star-rate-clear">{{__("Clear")}}</button>
+            </div>
+        </div>
+        <style>
+            .hotel-star-rate-input {
+                display: flex;
+                flex-direction: row-reverse;
+                justify-content: flex-end;
+            }
+            .hotel-star-rate-input input {
+                display: none;
+            }
+            .hotel-star-rate-input label {
+                margin: 0 12px 0 0;
+                cursor: pointer;
+                color: #d0d0d0;
+                font-size: 22px;
+            }
+            .hotel-star-rate-input label:hover,
+            .hotel-star-rate-input label:hover ~ label,
+            .hotel-star-rate-input input:checked ~ label {
+                color: #f5a623;
+            }
+            .hotel-star-rate-clear {
+                margin-left: 8px;
+            }
+        </style>
+        <script>
+            document.querySelector('.hotel-star-rate-clear')?.addEventListener('click', function () {
+                document.querySelectorAll('.hotel-star-rate-input input').forEach(function (el) {
+                    el.checked = false;
+                });
+            });
+        </script>
+        <div class="form-group">
+            <label class="control-label">{{__("Object type")}}</label>
+            <select name="object_type" class="form-control">
+                <option value="hotel">Отель</option>
+                <option value="recreation_center">База отдыха</option>
+                <option value="park_hotel">Парк-отель</option>
+                <option value="spa_hotel">Спа-отель</option>
+                <option value="eco_hotel">Эко-отель</option>
+                <option value="tourist_camp">Турбаза</option>
+                <option value="sanatorium">Санаторий</option>
+                <option value="rest_house">Дом отдыха</option>
+                <option value="glamping">Глэмпинг</option>
+                <option value="camping">Кемпинг</option>
+                <option value="guest_country_house">Гостевой дом/Загородный дом</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">{{__("Legal entity")}}</label>
+            <input type="text" name="legal_entity" class="form-control" value="">
+        </div>
+        <div class="form-group">
+            <label class="control-label">{{__("Aggregator contact details")}}</label>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="input-group" title="{{__('Owner phone')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        </div>
+                        <input type="text" name="aggregator_owner_phone" class="form-control" placeholder="{{__('Owner phone')}}" title="{{__('Owner phone')}}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group" title="{{__('Email')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+                        </div>
+                        <input type="text" name="aggregator_email" class="form-control" placeholder="{{__('Email')}}" title="{{__('Email')}}">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="input-group" title="{{__('Telegram')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-telegram"></i></span>
+                        </div>
+                        <input type="text" name="aggregator_telegram" class="form-control" placeholder="{{__('Telegram')}}" title="{{__('Telegram')}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">{{__("Guest contacts")}}</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group" title="{{__('Administrator phone')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                        </div>
+                        <input type="text" name="guest_admin_phone" class="form-control" placeholder="{{__('Administrator phone')}}" title="{{__('Administrator phone')}}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group" title="{{__('Chat link')}}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-comments"></i></span>
+                        </div>
+                        <input type="text" name="guest_chat_link" class="form-control" placeholder="{{__('Chat link')}}" title="{{__('Chat link')}}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-title"><strong>{{__("Hotel Content")}}</strong>
+        <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+    </div>
+    <div class="panel-body">
         <div class="form-group magic-field" data-id="content" data-type="content" data-editor="1">
-            <label class="control-label" data->{{__("Content")}}</label>
+            <label class="control-label" data->{{__("Description")}}</label>
             <div class="">
                 <textarea name="content" class="d-none has-ckeditor" id="content" cols="30" rows="10">{{$translation->content}}</textarea>
             </div>
@@ -24,14 +150,354 @@
                     {!! \Modules\Media\Helpers\FileHelper::fieldUpload('banner_image_id',$row->banner_image_id) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label">{{__("Gallery")}}</label>
-                {!! \Modules\Media\Helpers\FileHelper::fieldGalleryUpload('gallery',$row->gallery) !!}
+            <div class="form-group" data-gallery-type="territory">
+                <div class="d-flex align-items-center">
+                    <label class="control-label mb-0">{{__("Territory gallery")}}</label>
+                    <span class="hotel-section-gallery-toggle ml-2" role="button" style="cursor: pointer;"><i class="fa fa-chevron-up"></i></span>
+                </div>
+                <div class="hotel-section-gallery-body">
+                @php
+                    $galleryFolders = $row->gallery_folders ?? [];
+                    if (is_string($galleryFolders)) {
+                        $galleryFolders = json_decode($galleryFolders, true);
+                    }
+                    $galleryFolders = is_array($galleryFolders) ? array_values($galleryFolders) : [];
+                    $galleryFoldersSaveUrl = '';
+                    if (!empty($row->id)) {
+                        $galleryFoldersSaveUrl = request()->routeIs('hotel.vendor.*')
+                            ? route('hotel.vendor.galleryFolders', ['id' => $row->id])
+                            : route('hotel.admin.galleryFolders', ['id' => $row->id]);
+                    }
+                @endphp
+                <div class="hotel-gallery-wrap">
+                    <input type="hidden" name="gallery_folders" class="hotel-gallery-folders-input" value="{{ htmlspecialchars(json_encode($galleryFolders, JSON_UNESCAPED_UNICODE), ENT_QUOTES) }}">
+                    {!! \Modules\Media\Helpers\FileHelper::fieldGalleryUpload('gallery',$row->gallery, ['gallery_type' => 'territory']) !!}
+                    @if(false)
+                    <div class="hotel-gallery-root">
+                        <div class="hotel-gallery-folders">
+                            <div class="d-flex hotel-gallery-folder-list">
+                                @foreach($galleryFolders as $folder)
+                                    @php
+                                        $folderImageItems = [];
+                                        foreach (array_filter(explode(',', $folder['images'] ?? '')) as $imgId) {
+                                            $file = (new \Modules\Media\Models\MediaFile())->findById($imgId);
+                                            if (empty($file)) {
+                                                continue;
+                                            }
+                                            $folderImageItems[] = [
+                                                'id' => $file->id,
+                                                'thumb' => \Modules\Media\Helpers\FileHelper::url($file, 'thumb'),
+                                                'edit_path' => $file->getEditPath(),
+                                            ];
+                                        }
+                                    @endphp
+                                    <div class="hotel-gallery-folder" data-id="{{ $folder['id'] }}" data-images="{{ json_encode($folderImageItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) }}">
+                                        <div class="hotel-gallery-folder-box">
+                                            <span class="delete-folder btn btn-sm btn-danger" title="{{ __('Delete this folder') }}"><i class="fa fa-trash"></i></span>
+                                            <i class="fa fa-folder-o hotel-gallery-folder-icon"></i>
+                                        </div>
+                                        <input type="text" class="hotel-gallery-folder-name form-control" value="{{ $folder['name'] }}" placeholder="{{ __('New folder') }}" autocomplete="off">
+                                    </div>
+                                @endforeach
+                            </div>
+                            <div class="text-left mb-2">
+                                <button type="button" class="btn btn-info btn-sm hotel-gallery-folder-add"><i class="fa fa-folder"></i> {{ __('Create folder') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hotel-gallery-folder-inner" style="display: none;">
+                        <div class="hotel-gallery-folder-nav mb-3">
+                            <a href="#" class="hotel-gallery-folder-back">{{ __('Gallery') }}</a>
+                            / <strong class="hotel-gallery-folder-current-name"></strong>
+                        </div>
+                        <div class="dungdt-upload-multiple hotel-folder-photos">
+                            <div class="attach-demo d-flex"></div>
+                            <div class="upload-box">
+                                <input type="hidden" class="hotel-folder-photos-input" value="">
+                                <div class="text-left">
+                                    <span class="btn btn-info btn-sm btn-field-upload"><i class="fa fa-plus-circle"></i> {{ __('Select images') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+                </div>
             </div>
+            @foreach ([
+                ['key' => 'gallery_food', 'type' => 'food', 'label' => __('Food gallery')],
+                ['key' => 'gallery_entertainment', 'type' => 'entertainment', 'label' => __('Entertainment gallery')],
+                ['key' => 'gallery_amenities', 'type' => 'amenities', 'label' => __('Amenities gallery')],
+            ] as $extraGallery)
+                <div class="form-group" data-gallery-type="{{ $extraGallery['type'] }}">
+                    <div class="d-flex align-items-center">
+                        <label class="control-label mb-0">{{ $extraGallery['label'] }}</label>
+                        <span class="hotel-section-gallery-toggle ml-2" role="button" style="cursor: pointer;"><i class="fa fa-chevron-up"></i></span>
+                    </div>
+                    <div class="hotel-section-gallery-body">
+                        {!! \Modules\Media\Helpers\FileHelper::fieldGalleryUpload($extraGallery['key'], $row->{$extraGallery['key']}, ['gallery_type' => $extraGallery['type']]) !!}
+                    </div>
+                </div>
+            @endforeach
+            <style>
+                .hotel-gallery-folder-list {
+                    flex-wrap: wrap;
+                    margin: 0 -7px;
+                }
+                .hotel-gallery-folder {
+                    flex: 0 0 20%;
+                    margin-bottom: 10px;
+                    padding: 0 7px;
+                }
+                .hotel-gallery-folder-box {
+                    position: relative;
+                    height: 120px;
+                    background: #5a5a5a;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 3px;
+                    cursor: pointer;
+                }
+                .hotel-gallery-folder-icon {
+                    font-size: 52px;
+                    color: #fff;
+                    margin: 0;
+                }
+                .hotel-gallery-folders .delete-folder {
+                    position: absolute;
+                    top: 8px;
+                    left: 8px;
+                    z-index: 9;
+                    cursor: pointer;
+                }
+                .hotel-gallery-folder-name {
+                    margin-top: 6px;
+                    font-size: 13px;
+                    text-align: center;
+                }
+            </style>
+            @push('js')
+            <script>
+                jQuery(function ($) {
+                    $(document).on('click', '.hotel-section-gallery-toggle', function () {
+                        var $toggle = $(this);
+                        var $body = $toggle.closest('.form-group').find('.hotel-section-gallery-body');
+                        $body.slideToggle(200, function () {
+                            $toggle.find('i').attr('class', $body.is(':visible') ? 'fa fa-chevron-up' : 'fa fa-chevron-down');
+                        });
+                    });
+
+                    var newLabel = @json(__('New folder'));
+                    var deleteLabel = @json(__('Delete this folder'));
+                    var currentFolderId = null;
+                    var saveUrl = @json($galleryFoldersSaveUrl);
+
+                    function folderHtml() {
+                        return '<div class="hotel-gallery-folder" data-id="" data-images="[]">' +
+                            '<div class="hotel-gallery-folder-box">' +
+                            '<span class="delete-folder btn btn-sm btn-danger" title="' + deleteLabel + '"><i class="fa fa-trash"></i></span>' +
+                            '<i class="fa fa-folder-o hotel-gallery-folder-icon"></i>' +
+                            '</div>' +
+                            '<input type="text" class="hotel-gallery-folder-name form-control" value="" placeholder="' + newLabel + '" autocomplete="off">' +
+                            '</div>';
+                    }
+
+                    function getStoredFolders($wrap) {
+                        try {
+                            return JSON.parse($wrap.find('.hotel-gallery-folders-input').val() || '[]');
+                        } catch (e) {
+                            return [];
+                        }
+                    }
+
+                    function syncFolders($wrap) {
+                        var stored = getStoredFolders($wrap);
+                        var byId = {};
+                        stored.forEach(function (folder) {
+                            byId[String(folder.id)] = folder;
+                        });
+                        var folders = [];
+                        $wrap.find('.hotel-gallery-folder').each(function () {
+                            var id = String($(this).data('id'));
+                            var prev = byId[id] || {};
+                            folders.push({
+                                id: id,
+                                name: $.trim($(this).find('.hotel-gallery-folder-name').val()),
+                                images: prev.images || ''
+                            });
+                        });
+                        $wrap.find('.hotel-gallery-folders-input').val(JSON.stringify(folders));
+                    }
+
+                    function imageItemHtml(item) {
+                        return '<div class="image-item"><div class="inner">' +
+                            '<a class="edit-img btn btn-sm btn-primary edit-multiple" data-id="' + item.id + '" data-file="' + (item.edit_path || '') + '"><i class="fa fa-edit"></i></a>' +
+                            '<span class="delete btn btn-sm btn-danger"><i class="fa fa-trash"></i></span>' +
+                            '<div class="img-preview"><img class="image-responsive image-preview w-100" src="' + (item.thumb || '') + '"/></div>' +
+                            '</div></div>';
+                    }
+
+                    function capturePhotos($photos) {
+                        var items = [];
+                        var ids = [];
+                        $photos.find('.attach-demo .image-item').each(function () {
+                            var $edit = $(this).find('.edit-img');
+                            var id = $edit.data('id');
+                            if (!id) {
+                                return;
+                            }
+                            ids.push(id);
+                            items.push({
+                                id: id,
+                                thumb: $(this).find('img').attr('src') || '',
+                                edit_path: $edit.data('file') || ''
+                            });
+                        });
+                        return { ids: ids.join(','), items: items };
+                    }
+
+                    function persistOpenFolder() {
+                        if (!currentFolderId) {
+                            return;
+                        }
+                        var $wrap = $('.hotel-gallery-folders');
+                        var captured = capturePhotos($('.hotel-folder-photos'));
+                        var folders = getStoredFolders($wrap);
+                        folders.forEach(function (folder) {
+                            if (String(folder.id) === String(currentFolderId)) {
+                                folder.images = captured.ids;
+                            }
+                        });
+                        $wrap.find('.hotel-gallery-folders-input').val(JSON.stringify(folders));
+                        $wrap.find('.hotel-gallery-folder').filter(function () {
+                            return String($(this).data('id')) === String(currentFolderId);
+                        }).attr('data-images', JSON.stringify(captured.items)).data('images', captured.items);
+                    }
+
+                    function saveFoldersAjax() {
+                        if (!saveUrl) {
+                            return;
+                        }
+                        persistOpenFolder();
+                        syncFolders($('.hotel-gallery-folders'));
+                        $.ajax({
+                            url: saveUrl,
+                            type: 'POST',
+                            data: {
+                                gallery_folders: $('.hotel-gallery-folders-input').val()
+                            }
+                        });
+                    }
+
+                    function openFolder($folder) {
+                        persistOpenFolder();
+                        currentFolderId = String($folder.data('id'));
+                        var name = $.trim($folder.find('.hotel-gallery-folder-name').val()) || newLabel;
+                        var items = $folder.attr('data-images') || $folder.data('images') || [];
+                        if (typeof items === 'string') {
+                            try {
+                                items = JSON.parse(items);
+                            } catch (e) {
+                                items = [];
+                            }
+                        }
+                        if (!Array.isArray(items)) {
+                            items = [];
+                        }
+                        var html = '';
+                        var ids = [];
+                        items.forEach(function (item) {
+                            html += imageItemHtml(item);
+                            ids.push(item.id);
+                        });
+                        var $photos = $('.hotel-folder-photos');
+                        $photos.find('.attach-demo').html(html);
+                        $photos.find('input').val(ids.join(','));
+                        $('.hotel-gallery-folder-current-name').text(name);
+                        $('.hotel-gallery-root').hide();
+                        $('.hotel-gallery-folder-inner').show();
+                    }
+
+                    function closeFolder() {
+                        persistOpenFolder();
+                        currentFolderId = null;
+                        $('.hotel-folder-photos').find('.attach-demo').empty();
+                        $('.hotel-folder-photos').find('input').val('');
+                        $('.hotel-gallery-folder-inner').hide();
+                        $('.hotel-gallery-root').show();
+                        saveFoldersAjax();
+                    }
+
+                    $(document).on('click', '.hotel-gallery-folder-add', function () {
+                        var $wrap = $(this).closest('.hotel-gallery-folders');
+                        var $item = $(folderHtml());
+                        var id = 'f-' + Date.now();
+                        $item.data('id', id);
+                        $item.attr('data-id', id);
+                        $item.data('images', []);
+                        $wrap.find('.hotel-gallery-folder-list').append($item);
+                        syncFolders($wrap);
+                        $item.find('.hotel-gallery-folder-name').focus();
+                    });
+
+                    $(document).on('input', '.hotel-gallery-folders .hotel-gallery-folder-name', function () {
+                        syncFolders($(this).closest('.hotel-gallery-folders'));
+                    });
+
+                    $(document).on('keydown', '.hotel-gallery-folders .hotel-gallery-folder-name', function (e) {
+                        if (e.key === 'Enter' || e.keyCode === 13) {
+                            e.preventDefault();
+                            $(this).blur();
+                        }
+                    });
+
+                    $(document).on('blur', '.hotel-gallery-folders .hotel-gallery-folder-name', function () {
+                        syncFolders($(this).closest('.hotel-gallery-folders'));
+                        saveFoldersAjax();
+                    });
+
+                    $(document).on('click', '.hotel-gallery-folder-box', function (e) {
+                        if ($(e.target).closest('.delete-folder').length) {
+                            return;
+                        }
+                        openFolder($(this).closest('.hotel-gallery-folder'));
+                    });
+
+                    $(document).on('click', '.hotel-gallery-folder-back', function (e) {
+                        e.preventDefault();
+                        closeFolder();
+                    });
+
+                    $(document).on('click', '.hotel-gallery-folders .delete-folder', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var $folder = $(this).closest('.hotel-gallery-folder');
+                        var $wrap = $(this).closest('.hotel-gallery-folders');
+                        bookingCoreApp.showConfirm({
+                            message: i18n.confirm_delete_folder,
+                            callback: function (result) {
+                                if (!result) {
+                                    return;
+                                }
+                                $folder.remove();
+                                syncFolders($wrap);
+                                saveFoldersAjax();
+                            }
+                        });
+                    });
+
+                    $('.hotel-gallery-wrap').closest('form').on('submit', function () {
+                        persistOpenFolder();
+                    });
+                });
+            </script>
+            @endpush
         @endif
     </div>
 </div>
 
+{{--
 <div class="panel">
     <div class="panel-title"><strong>{{__("Hotel Policy")}}</strong></div>
     <div class="panel-body">
@@ -96,3 +562,4 @@
         <?php do_action(\Modules\Hotel\Hook::FORM_AFTER_POLICY,$row) ?>
     </div>
 </div>
+--}}

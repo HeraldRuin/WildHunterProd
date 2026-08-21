@@ -1,6 +1,8 @@
 @if(!empty($location_category) and $location_category->count() > 0)
     <div class="panel">
-        <div class="panel-title"><strong>{{__("Surroundings")}}</strong></div>
+        <div class="panel-title"><strong>{{__("Surroundings")}}</strong>
+            <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+        </div>
         <div class="panel-body">
             @if(!empty($location_category))
                 @foreach($location_category as $category)

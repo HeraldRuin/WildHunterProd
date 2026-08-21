@@ -12,6 +12,7 @@ class HotelTranslation extends Hotel
         'title',
         'content',
         'address',
+        'how_to_get',
         'policy',
         'surrounding'
     ];

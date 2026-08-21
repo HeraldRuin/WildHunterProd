@@ -1,5 +1,7 @@
 <div class="panel">
-    <div class="panel-title"><strong>{{ __('Locations') }}</strong></div>
+    <div class="panel-title"><strong>{{ __('Locations') }}</strong>
+        <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+    </div>
     <div class="panel-body">
         @if (is_default_lang())
             <div class="form-group">
@@ -60,13 +62,51 @@
             <input type="text" name="address" id="customPlaceAddress" class="form-control"
                 placeholder="{{ __('Real address') }}" value="{{ $translation->address }}">
         </div>
+        <div class="form-group">
+            <label class="control-label">{{ __('How to get there') }}</label>
+            <input type="text" name="how_to_get" class="form-control" value="{{ $translation->how_to_get }}">
+        </div>
+        <div class="form-group">
+            <div class="nearby-places-block" style="border: 1px solid #ced4da; border-radius: 4px; padding: 10px 14px; background: #fff;">
+                <label class="control-label mb-0">{{ __("What's Nearby") }}?</label>
+                <div class="nearby-place-fields" style="margin-top: 10px;">
+                    <div class="nearby-place-field" data-nearby-row="city" style="margin-bottom: 8px;">
+                        <div class="form-row" style="display: flex; align-items: center; gap: 10px;">
+                            <span class="nearby-place-icon" title="{{ __('City') }}" style="width: 24px; text-align: center; flex-shrink: 0;">
+                                <i class="fa fa-building" style="font-size: 20px;"></i>
+                            </span>
+                            <input type="text" name="nearby_city" id="nearby_city" class="form-control" value="{{ $row->nearby_city }}" style="flex: 1;">
+                            <input type="text" name="nearby_city_distance" id="nearby_city_distance" class="form-control" value="{{ $row->nearby_city_distance }}" placeholder="км" style="max-width: 110px;">
+                        </div>
+                    </div>
+                    <div class="nearby-place-field" data-nearby-row="airport" style="margin-bottom: 8px;">
+                        <div class="form-row" style="display: flex; align-items: center; gap: 10px;">
+                            <span class="nearby-place-icon" title="{{ __('Air terminal') }}" style="width: 24px; text-align: center; flex-shrink: 0;">
+                                <i class="fa fa-plane" style="font-size: 20px;"></i>
+                            </span>
+                            <input type="text" name="nearby_airport" id="nearby_airport" class="form-control" value="{{ $row->nearby_airport }}" style="flex: 1;">
+                            <input type="text" name="nearby_airport_distance" id="nearby_airport_distance" class="form-control" value="{{ $row->nearby_airport_distance }}" placeholder="км" style="max-width: 110px;">
+                        </div>
+                    </div>
+                    <div class="nearby-place-field" data-nearby-row="station">
+                        <div class="form-row" style="display: flex; align-items: center; gap: 10px;">
+                            <span class="nearby-place-icon" title="{{ __('Train station') }}" style="width: 24px; text-align: center; flex-shrink: 0;">
+                                <i class="fa fa-train" style="font-size: 20px;"></i>
+                            </span>
+                            <input type="text" name="nearby_station" id="nearby_station" class="form-control" value="{{ $row->nearby_station }}" style="flex: 1;">
+                            <input type="text" name="nearby_station_distance" id="nearby_station_distance" class="form-control" value="{{ $row->nearby_station_distance }}" placeholder="км" style="max-width: 110px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         @if (is_default_lang())
             <div class="form-group">
                 <label class="control-label">{{ __('The geographic coordinate') }}</label>
                 <div class="control-map-group">
                     <div id="map_content"></div>
                     <div class="input-group pt-3">
-                        <input type="text" placeholder="{{ __('Search by name...') }}" class="bc_searchbox form-control" autocomplete="off">
+                        <input type="text" placeholder="{{ __('Search city, address') }}" class="bc_searchbox form-control" autocomplete="off">
                         <button type="button"
                                 id="clearSearch"
                                 class="btn btn-light d-none">
