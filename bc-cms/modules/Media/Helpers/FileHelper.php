@@ -181,9 +181,10 @@ class FileHelper
         $is_tailwind = $options['tailwind'] ?? 0;
 
         $oldIds = $oldValue ? explode(',', $oldValue) : [];
+        $galleryType = $options['gallery_type'] ?? '';
         ob_start();
     ?>
-        <div class="dungdt-upload-multiple " data-val="<?php echo $oldValue ?>">
+        <div class="dungdt-upload-multiple " data-val="<?php echo $oldValue ?>"<?php echo $galleryType !== '' ? ' data-gallery-type="'.htmlspecialchars($galleryType, ENT_QUOTES).'"' : ''; ?>>
             <div class="attach-demo d-flex">
                 <?php
                 foreach ($oldIds as $id) {

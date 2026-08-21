@@ -148,7 +148,7 @@ jQuery(function ($) {
         p.find("input").attr('value','')
         p.removeClass("active");
     });
-    $('.dungdt-upload-multiple').find('.btn-field-upload').click(function () {
+    $(document).on('click', '.dungdt-upload-multiple .btn-field-upload', function () {
         let p = $(this).closest('.dungdt-upload-multiple');
         uploaderModal.show({
             multiple: true,
@@ -169,8 +169,9 @@ jQuery(function ($) {
                             '</div>'
                     }
                     p.find('.attach-demo').append(html);
-                    var old = p.find('input').val().split(',');
-                    p.find('input').val(ids.concat(old).join(','));
+                    var $input = p.find('input').first();
+                    var old = String($input.val() || '').split(',').filter(Boolean);
+                    $input.val(ids.concat(old).join(','));
                 }
             },
         });
