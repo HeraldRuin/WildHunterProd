@@ -61,6 +61,7 @@
                         <thead>
                         <tr>
                             <th width="60px"><input type="checkbox" class="check-all"></th>
+                            <th width="80px">ID</th>
                             <th> {{ __('Name')}}</th>
                             <th width="200px"> {{ __('Admin Base')}}</th>
                             <th width="200px"> {{ __('Location')}}</th>
@@ -77,6 +78,7 @@
                                 <tr class="{{$row->status}}">
                                     <td><input type="checkbox" name="ids[]" class="check-item" value="{{$row->id}}">
                                     </td>
+                                    <td>{{$row->id}}</td>
                                     <td class="title">
                                         @if($row->is_featured)
                                             <span class="badge badge-primary">{{ __("Featured") }}</span>
@@ -127,7 +129,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="7">{{__("No hotel found")}}</td>
+                                <td colspan="10">{{__("No hotel found")}}</td>
                             </tr>
                         @endif
                         </tbody>
