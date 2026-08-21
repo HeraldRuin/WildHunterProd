@@ -3,6 +3,7 @@ namespace Modules\Hotel\Controllers;
 
 use App\Models\User;
 use App\Notifications\AdminChannelServices;
+use App\Services\DaData\DaDataService;
 use Illuminate\Notifications\Notifiable;
 use Modules\Booking\Events\BookingUpdatedEvent;
 use Modules\Booking\Models\Enquiry;
@@ -11,6 +12,7 @@ use Modules\Core\Events\UpdatedServiceEvent;
 use Modules\FrontendController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Modules\Hotel\Hook;
 use Modules\Hotel\Models\Hotel;
 use Modules\Hotel\Services\AddDataInView;
@@ -22,6 +24,7 @@ use Modules\Hotel\Models\HotelTranslation;
 use Modules\Location\Models\LocationCategory;
 use Modules\User\Models\Plan;
 use Modules\User\Services\DashboardService;
+use RuntimeException;
 
 class VendorController extends FrontendController
 {
@@ -187,6 +190,17 @@ class VendorController extends FrontendController
             'gallery_food',
             'gallery_entertainment',
             'gallery_amenities',
+            'object_type',
+            'legal_entity',
+            'legal_inn',
+            'legal_ogrn',
+            'legal_ownership_form',
+            'legal_requisites',
+            'aggregator_owner_phone',
+            'aggregator_email',
+            'aggregator_telegram',
+            'guest_admin_phone',
+            'guest_chat_link',
             'is_featured',
             'policy',
             'location_id',
@@ -335,6 +349,23 @@ class VendorController extends FrontendController
         $row->saveGalleryFolderList($request->input('gallery_folders'));
 
         return $this->sendSuccess([], __('Folder saved'));
+    }
+
+    public function findPartyByInn(Request $request, DaDataService $daDataService)
+    {
+        $this->checkPermission('hotel_update');
+
+        try {
+            $party = $daDataService->findPartyByInn((string) $request->input('inn', ''));
+        } catch (InvalidArgumentException|RuntimeException $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        if (empty($party)) {
+            return $this->sendError(__('Company not found'));
+        }
+
+        return $this->sendSuccess(['data' => $party]);
     }
 
     public function restore($id)

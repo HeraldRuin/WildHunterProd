@@ -2,8 +2,10 @@
 namespace Modules\Hotel\Admin;
 
 use App\User;
+use App\Services\DaData\DaDataService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use InvalidArgumentException;
 use Modules\AdminController;
 use Modules\Core\Events\CreatedServicesEvent;
 use Modules\Core\Events\UpdatedServiceEvent;
@@ -15,6 +17,7 @@ use Modules\Hotel\Models\HotelTerm;
 use Modules\Hotel\Models\HotelTranslation;
 use Modules\Location\Models\LocationCategory;
 use Modules\User\Models\Role;
+use RuntimeException;
 
 class HotelController extends AdminController
 {
@@ -257,6 +260,17 @@ class HotelController extends AdminController
             'gallery_food',
             'gallery_entertainment',
             'gallery_amenities',
+            'object_type',
+            'legal_entity',
+            'legal_inn',
+            'legal_ogrn',
+            'legal_ownership_form',
+            'legal_requisites',
+            'aggregator_owner_phone',
+            'aggregator_email',
+            'aggregator_telegram',
+            'guest_admin_phone',
+            'guest_chat_link',
             'is_featured',
             'policy',
             'location_id',
@@ -470,6 +484,23 @@ class HotelController extends AdminController
         $row->saveGalleryFolderList($request->input('gallery_folders'));
 
         return $this->sendSuccess([], __('Folder saved'));
+    }
+
+    public function findPartyByInn(Request $request, DaDataService $daDataService)
+    {
+        $this->checkPermission('hotel_update');
+
+        try {
+            $party = $daDataService->findPartyByInn((string) $request->input('inn', ''));
+        } catch (InvalidArgumentException|RuntimeException $e) {
+            return $this->sendError($e->getMessage());
+        }
+
+        if (empty($party)) {
+            return $this->sendError(__('Company not found'));
+        }
+
+        return $this->sendSuccess(['data' => $party]);
     }
 
     public function getForSelect2(Request $request)
