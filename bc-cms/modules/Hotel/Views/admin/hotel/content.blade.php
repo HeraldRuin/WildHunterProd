@@ -56,23 +56,148 @@
         <div class="form-group">
             <label class="control-label">{{__("Object type")}}</label>
             <select name="object_type" class="form-control">
-                <option value="hotel">Отель</option>
-                <option value="recreation_center">База отдыха</option>
-                <option value="park_hotel">Парк-отель</option>
-                <option value="spa_hotel">Спа-отель</option>
-                <option value="eco_hotel">Эко-отель</option>
-                <option value="tourist_camp">Турбаза</option>
-                <option value="sanatorium">Санаторий</option>
-                <option value="rest_house">Дом отдыха</option>
-                <option value="glamping">Глэмпинг</option>
-                <option value="camping">Кемпинг</option>
-                <option value="guest_country_house">Гостевой дом/Загородный дом</option>
+                @foreach([
+                    'hotel' => 'Отель',
+                    'recreation_center' => 'База отдыха',
+                    'park_hotel' => 'Парк-отель',
+                    'spa_hotel' => 'Спа-отель',
+                    'eco_hotel' => 'Эко-отель',
+                    'tourist_camp' => 'Турбаза',
+                    'sanatorium' => 'Санаторий',
+                    'rest_house' => 'Дом отдыха',
+                    'glamping' => 'Глэмпинг',
+                    'camping' => 'Кемпинг',
+                    'guest_country_house' => 'Гостевой дом/Загородный дом',
+                ] as $typeValue => $typeLabel)
+                    <option value="{{ $typeValue }}" {{ ($row->object_type ?: 'hotel') === $typeValue ? 'selected' : '' }}>{{ $typeLabel }}</option>
+                @endforeach
             </select>
         </div>
-        <div class="form-group">
-            <label class="control-label">{{__("Legal entity")}}</label>
-            <input type="text" name="legal_entity" class="form-control" value="">
+        <div class="form-group hotel-legal-entity-block">
+            <label class="control-label">{{__("INN")}}</label>
+            <div class="input-group">
+                <input type="text" name="legal_inn" class="form-control hotel-legal-inn" value="{{ $row->legal_inn }}" maxlength="12" autocomplete="off">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-info hotel-legal-inn-lookup">{{__("Find")}}</button>
+                </div>
+            </div>
+            <div class="hotel-legal-details"@if(empty($row->legal_inn)) style="display: none;"@endif>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <label class="control-label">{{__("Legal entity")}}</label>
+                        <input type="text" name="legal_entity" class="form-control" value="{{ $row->legal_entity }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="control-label">{{__("OGRN")}}</label>
+                        <input type="text" name="legal_ogrn" class="form-control" value="{{ $row->legal_ogrn }}" maxlength="15">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="control-label">{{__("Ownership form")}}</label>
+                        <input type="text" name="legal_ownership_form" class="form-control" value="{{ $row->legal_ownership_form }}">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="control-label">{{__("Legal requisites")}}</label>
+                    <textarea name="legal_requisites" class="form-control" rows="3">{{ $row->legal_requisites }}</textarea>
+                </div>
+            </div>
         </div>
+        @php
+            $dadataPartyUrl = request()->routeIs('hotel.vendor.*')
+                ? route('hotel.vendor.dadata.party')
+                : route('hotel.admin.dadata.party');
+        @endphp
+        @push('js')
+        <script>
+            jQuery(function ($) {
+                var partyUrl = @json($dadataPartyUrl);
+                var lookingUp = false;
+                var $details = $('.hotel-legal-details');
+
+                function showLegalDetails() {
+                    $details.show();
+                }
+
+                function hideLegalDetails() {
+                    $details.hide();
+                    $('[name="legal_entity"]').val('');
+                    $('[name="legal_ogrn"]').val('');
+                    $('[name="legal_ownership_form"]').val('');
+                    $('[name="legal_requisites"]').val('');
+                }
+
+                function fillLegalParty(data) {
+                    if (!data) {
+                        return;
+                    }
+                    $('[name="legal_entity"]').val(data.legal_entity || '');
+                    $('[name="legal_inn"]').val(data.legal_inn || '');
+                    $('[name="legal_ogrn"]').val(data.legal_ogrn || '');
+                    $('[name="legal_ownership_form"]').val(data.legal_ownership_form || '');
+                    $('[name="legal_requisites"]').val(data.legal_requisites || '');
+                    showLegalDetails();
+                }
+
+                function lookupPartyByInn() {
+                    var inn = $.trim($('.hotel-legal-inn').val() || '');
+                    if (!inn) {
+                        hideLegalDetails();
+                        return;
+                    }
+                    if (lookingUp) {
+                        return;
+                    }
+                    lookingUp = true;
+                    $.ajax({
+                        url: partyUrl,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: { inn: inn },
+                        success: function (res) {
+                            if (res && res.status) {
+                                fillLegalParty(res.data || {});
+                                return;
+                            }
+                            hideLegalDetails();
+                            if (typeof bookingCoreApp !== 'undefined') {
+                                bookingCoreApp.showError(res);
+                            }
+                        },
+                        error: function (e) {
+                            hideLegalDetails();
+                            if (typeof bookingCoreApp !== 'undefined') {
+                                bookingCoreApp.showAjaxError(e);
+                            }
+                        },
+                        complete: function () {
+                            lookingUp = false;
+                        }
+                    });
+                }
+
+                $(document).on('click', '.hotel-legal-inn-lookup', function (e) {
+                    e.preventDefault();
+                    lookupPartyByInn();
+                });
+
+                $(document).on('blur', '.hotel-legal-inn', function () {
+                    var inn = $.trim($(this).val() || '');
+                    if (!inn) {
+                        hideLegalDetails();
+                        return;
+                    }
+                    lookupPartyByInn();
+                });
+
+                $(document).on('keydown', '.hotel-legal-inn', function (e) {
+                    if (e.key === 'Enter' || e.keyCode === 13) {
+                        e.preventDefault();
+                        $(this).blur();
+                    }
+                });
+            });
+        </script>
+        @endpush
         <div class="form-group">
             <label class="control-label">{{__("Aggregator contact details")}}</label>
             <div class="row">
@@ -81,7 +206,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-phone"></i></span>
                         </div>
-                        <input type="text" name="aggregator_owner_phone" class="form-control" placeholder="{{__('Owner phone')}}" title="{{__('Owner phone')}}">
+                        <input type="text" name="aggregator_owner_phone" class="form-control" value="{{ $row->aggregator_owner_phone }}" placeholder="{{__('Owner phone')}}" title="{{__('Owner phone')}}">
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -89,7 +214,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-envelope"></i></span>
                         </div>
-                        <input type="text" name="aggregator_email" class="form-control" placeholder="{{__('Email')}}" title="{{__('Email')}}">
+                        <input type="text" name="aggregator_email" class="form-control" value="{{ $row->aggregator_email }}" placeholder="{{__('Email')}}" title="{{__('Email')}}">
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -97,7 +222,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-telegram"></i></span>
                         </div>
-                        <input type="text" name="aggregator_telegram" class="form-control" placeholder="{{__('Telegram')}}" title="{{__('Telegram')}}">
+                        <input type="text" name="aggregator_telegram" class="form-control" value="{{ $row->aggregator_telegram }}" placeholder="{{__('Telegram')}}" title="{{__('Telegram')}}">
                     </div>
                 </div>
             </div>
@@ -110,7 +235,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-phone"></i></span>
                         </div>
-                        <input type="text" name="guest_admin_phone" class="form-control" placeholder="{{__('Administrator phone')}}" title="{{__('Administrator phone')}}">
+                        <input type="text" name="guest_admin_phone" class="form-control" value="{{ $row->guest_admin_phone }}" placeholder="{{__('Administrator phone')}}" title="{{__('Administrator phone')}}">
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -118,7 +243,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-comments"></i></span>
                         </div>
-                        <input type="text" name="guest_chat_link" class="form-control" placeholder="{{__('Chat link')}}" title="{{__('Chat link')}}">
+                        <input type="text" name="guest_chat_link" class="form-control" value="{{ $row->guest_chat_link }}" placeholder="{{__('Chat link')}}" title="{{__('Chat link')}}">
                     </div>
                 </div>
             </div>
