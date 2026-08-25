@@ -105,8 +105,19 @@ class AttributeController extends AdminController
         $id = $request->input('id');
 
         $this->validate($request, [
-            'name' => 'required'
+            'name' => 'required',
+            'block_type_id' => 'required|exists:bc_attr_block_types,id',
         ]);
+
+        $blockType = $this->attributeBlockTypeClass::where('service', 'hotel')
+            ->find($request->input('block_type_id'));
+        if (empty($blockType)) {
+            return redirect()->back()->with('error', __('Выберите блок и тип атрибутов'));
+        }
+        if ($request->filled('form_block_id') && (int) $blockType->block_id !== (int) $request->input('form_block_id')) {
+            return redirect()->back()->with('error', __('Выберите блок и тип атрибутов'));
+        }
+
         if ($id) {
             $row = $this->attributesClass::find($id);
             if (empty($row)) {
@@ -117,6 +128,7 @@ class AttributeController extends AdminController
             $row->service = 'hotel';
         }
         $row->fill($request->input());
+        $row->block_type_id = $blockType->id;
         $res = $row->saveOriginOrTranslation($request->input('lang'));
         if ($res) {
             if (!$row->terms()->exists()) {

@@ -50,7 +50,7 @@
                         <hr>
                         <div class="d-flex justify-content-between">
                             <span></span>
-                            <button class="btn btn-primary" type="submit">{{__("Save Change")}}</button>
+                            <button class="btn btn-primary" type="submit" id="attr-form-submit" @if(empty($row->block_type_id) || empty($selectedBlockId)) disabled @endif>{{__("Save Change")}}</button>
                         </div>
                     </form>
                 </div>
@@ -76,8 +76,14 @@
         var blockTypes = @json($blockTypesForJs);
         var $blockSelect = $('#attr-form-block');
         var $typeSelect = $('#attr-form-block-type');
+        var $formSubmit = $('#attr-form-submit');
         var typePlaceholder = @json(__('Тип атрибутов'));
         var selectedTypeId = @json($row->block_type_id ?: null);
+
+        function syncFormSubmitState() {
+            var canSubmit = Boolean($blockSelect.val()) && Boolean($typeSelect.val());
+            $formSubmit.prop('disabled', !canSubmit);
+        }
 
         function fillFormBlockTypes(blockId, selectedTypeId) {
             $typeSelect.empty();
@@ -112,9 +118,15 @@
 
         $blockSelect.on('change', function () {
             fillFormBlockTypes($(this).val(), null);
+            syncFormSubmitState();
+        });
+
+        $typeSelect.on('change', function () {
+            syncFormSubmitState();
         });
 
         fillFormBlockTypes($blockSelect.val(), selectedTypeId);
+        syncFormSubmitState();
     })();
 </script>
 @endpush

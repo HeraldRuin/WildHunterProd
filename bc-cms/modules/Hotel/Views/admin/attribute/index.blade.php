@@ -37,7 +37,7 @@
                         <div class="panel-body">
                             @include('Hotel::admin/attribute/form',['parents'=>$rows])
                             <div class="">
-                                <button class="btn btn-primary" type="submit">{{__("Add new")}}</button>
+                                <button class="btn btn-primary" type="submit" id="attr-form-submit" disabled>{{__("Add new")}}</button>
                             </div>
                         </div>
                     </div>
@@ -150,12 +150,18 @@
         var $typeSelect = $('#attr-block-type-filter');
         var $formBlockSelect = $('#attr-form-block');
         var $formTypeSelect = $('#attr-form-block-type');
+        var $formSubmit = $('#attr-form-submit');
         var $rows = $('.attr-row');
         var $filterEmptyRow = $('.attr-filter-empty-row');
         var $filterEmptyText = $('.attr-filter-empty-text');
         var typePlaceholder = @json(__('Тип атрибутов'));
         var selectMessage = @json(__('Выберите блок и тип атрибутов'));
         var emptyMessage = @json(__('Нет атрибутов для выбранного типа'));
+
+        function syncFormSubmitState() {
+            var canSubmit = Boolean($formBlockSelect.val()) && Boolean($formTypeSelect.val());
+            $formSubmit.prop('disabled', !canSubmit);
+        }
 
         function fillTypeSelect($select, blockId, selectedTypeId) {
             $select.empty();
@@ -225,9 +231,15 @@
 
         $formBlockSelect.on('change', function () {
             fillTypeSelect($formTypeSelect, $(this).val(), null);
+            syncFormSubmitState();
+        });
+
+        $formTypeSelect.on('change', function () {
+            syncFormSubmitState();
         });
 
         fillTypeSelect($formTypeSelect, $formBlockSelect.val(), null);
+        syncFormSubmitState();
         filterAttributesByType(null);
     })();
 </script>
