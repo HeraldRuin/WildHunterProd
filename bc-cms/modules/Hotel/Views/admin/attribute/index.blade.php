@@ -11,6 +11,28 @@
                     @csrf
                     <input type="hidden" name="id" value="{{$row->id}}">
                     <div class="panel">
+                        <div class="panel-title">{{__('Блок атрибутов')}}</div>
+                        <div class="panel-body">
+                            <select name="form_block_id" id="attr-form-block" class="form-control">
+                                <option value="" disabled selected hidden>{{__('Блок атрибутов')}}</option>
+                                @foreach(($blocks ?? []) as $block)
+                                    @php $blockTranslate = $block->translate(app_get_locale()); @endphp
+                                    <option value="{{$block->id}}">
+                                        {{$blockTranslate->name ?: $block->name}}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">{{__('Тип атрибутов')}}</div>
+                        <div class="panel-body">
+                            <select name="block_type_id" id="attr-form-block-type" class="form-control">
+                                <option value="" disabled selected hidden>{{__('Тип атрибутов')}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel">
                         <div class="panel-title">{{__("Add Attributes")}}</div>
                         <div class="panel-body">
                             @include('Hotel::admin/attribute/form',['parents'=>$rows])
@@ -126,6 +148,8 @@
         var blockTypes = @json($blockTypesForJs);
         var $blockSelect = $('#attr-block-filter');
         var $typeSelect = $('#attr-block-type-filter');
+        var $formBlockSelect = $('#attr-form-block');
+        var $formTypeSelect = $('#attr-form-block-type');
         var $rows = $('.attr-row');
         var $filterEmptyRow = $('.attr-filter-empty-row');
         var $filterEmptyText = $('.attr-filter-empty-text');
@@ -133,14 +157,14 @@
         var selectMessage = @json(__('Выберите блок и тип атрибутов'));
         var emptyMessage = @json(__('Нет атрибутов для выбранного типа'));
 
-        function fillBlockTypes(blockId) {
-            $typeSelect.empty();
-            $typeSelect.append(
+        function fillTypeSelect($select, blockId, selectedTypeId) {
+            $select.empty();
+            $select.append(
                 $('<option>', {
                     value: '',
                     text: typePlaceholder,
                     disabled: true,
-                    selected: true,
+                    selected: !selectedTypeId,
                     hidden: true
                 })
             );
@@ -154,10 +178,11 @@
                     return String(item.block_id) === String(blockId);
                 })
                 .forEach(function (item) {
-                    $typeSelect.append(
+                    $select.append(
                         $('<option>', {
                             value: item.id,
-                            text: item.name
+                            text: item.name,
+                            selected: selectedTypeId && String(selectedTypeId) === String(item.id)
                         })
                     );
                 });
@@ -190,7 +215,7 @@
         }
 
         $blockSelect.on('change', function () {
-            fillBlockTypes($(this).val());
+            fillTypeSelect($typeSelect, $(this).val(), null);
             filterAttributesByType(null);
         });
 
@@ -198,6 +223,11 @@
             filterAttributesByType($(this).val());
         });
 
+        $formBlockSelect.on('change', function () {
+            fillTypeSelect($formTypeSelect, $(this).val(), null);
+        });
+
+        fillTypeSelect($formTypeSelect, $formBlockSelect.val(), null);
         filterAttributesByType(null);
     })();
 </script>

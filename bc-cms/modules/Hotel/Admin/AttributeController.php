@@ -72,10 +72,13 @@ class AttributeController extends AdminController
         }
         $translation = $row->translate($request->query('lang',get_main_lang()));
         $this->checkPermission('hotel_manage_attributes');
+        $selectedBlockId = optional($row->blockType)->block_id;
         $data = [
             'translation'    => $translation,
             'enable_multi_lang'=>true,
+            'blocks'      => $this->attributeBlockClass::where('service', 'hotel')->orderBy('id')->get(),
             'blockTypes'  => $this->attributeBlockTypeClass::where('service', 'hotel')->orderBy('position')->orderBy('id')->get(),
+            'selectedBlockId' => $selectedBlockId,
             'rows'        => $this->attributesClass::where("service", 'hotel')->get(),
             'row'         => $row,
             'breadcrumbs' => [
