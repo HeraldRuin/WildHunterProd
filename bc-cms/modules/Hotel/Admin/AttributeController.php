@@ -116,6 +116,12 @@ class AttributeController extends AdminController
         $row->fill($request->input());
         $res = $row->saveOriginOrTranslation($request->input('lang'));
         if ($res) {
+            if (!$row->terms()->exists()) {
+                $term = new $this->termsClass();
+                $term->name = $row->name;
+                $term->attr_id = $row->id;
+                $term->save();
+            }
             return redirect()->back()->with('success', __('Attribute saved'));
         }
     }

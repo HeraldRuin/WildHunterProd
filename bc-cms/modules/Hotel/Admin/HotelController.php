@@ -11,6 +11,7 @@ use Modules\Core\Events\CreatedServicesEvent;
 use Modules\Core\Events\UpdatedServiceEvent;
 use Modules\Core\Models\Attributes;
 use Modules\Core\Models\AttributeBlock;
+use Modules\Core\Models\Terms;
 use Modules\Hotel\Hook;
 use Modules\Location\Models\Location;
 use Modules\Hotel\Models\Hotel;
@@ -118,14 +119,7 @@ class HotelController extends AdminController
         $data = [
             'row'            => $row,
             'attributes'     => $this->attributesClass::where('service', 'hotel')->with(['terms'])->get(),
-            'attributeBlocks'=> AttributeBlock::where('service', 'hotel')
-                ->with(['types' => function ($query) {
-                    $query->with(['attributes' => function ($attrQuery) {
-                        $attrQuery->where('service', 'hotel')->with(['terms']);
-                    }]);
-                }])
-                ->orderBy('created_at', 'asc')
-                ->get(),
+            'attributeBlocks'=> $this->getHotelAttributeBlocks(),
             'hotel_location' => $this->locationClass::where('status', 'publish')->get()->toTree(),
             'location_category' => $this->locationCategoryClass::where('status', 'publish')->get(),
             'translation'    => new $this->hotelTranslationClass(),
@@ -144,6 +138,34 @@ class HotelController extends AdminController
             'page_title'     => __("Add new Hotel")
         ];
         return view('Hotel::admin.detail', $data);
+    }
+
+    protected function getHotelAttributeBlocks()
+    {
+        $blocks = AttributeBlock::where('service', 'hotel')
+            ->with(['types' => function ($query) {
+                $query->with(['attributes' => function ($attrQuery) {
+                    $attrQuery->where('service', 'hotel')->with(['terms']);
+                }]);
+            }])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        foreach ($blocks as $block) {
+            foreach ($block->types as $type) {
+                foreach ($type->attributes as $attribute) {
+                    if ($attribute->terms->isEmpty()) {
+                        $term = new Terms();
+                        $term->name = $attribute->name;
+                        $term->attr_id = $attribute->id;
+                        $term->save();
+                        $attribute->setRelation('terms', collect([$term]));
+                    }
+                }
+            }
+        }
+
+        return $blocks;
     }
 
     public function recovery(Request $request)
@@ -216,14 +238,7 @@ class HotelController extends AdminController
             'translation'    => $translation,
             "selected_terms" => $row->terms->pluck('term_id'),
             'attributes'     => $this->attributesClass::where('service', 'hotel')->with(['terms'])->get(),
-            'attributeBlocks'=> AttributeBlock::where('service', 'hotel')
-                ->with(['types' => function ($query) {
-                    $query->with(['attributes' => function ($attrQuery) {
-                        $attrQuery->where('service', 'hotel')->with(['terms']);
-                    }]);
-                }])
-                ->orderBy('created_at', 'asc')
-                ->get(),
+            'attributeBlocks'=> $this->getHotelAttributeBlocks(),
             'hotel_location'  => $this->locationClass::where('status', 'publish')->get()->toTree(),
             'location_category' => $this->locationCategoryClass::where('status', 'publish')->get(),
             'can_assign_user' => is_null($row->admin_base),
