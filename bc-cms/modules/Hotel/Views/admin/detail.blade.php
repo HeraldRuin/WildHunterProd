@@ -139,8 +139,17 @@
             $(document).on('click', '.panel-collapse-toggle', function () {
                 var $toggle = $(this);
                 var $body = $toggle.closest('.panel').children('.panel-body');
+                var isIconToggle = $toggle.hasClass('panel-collapse-toggle-icon');
                 $body.slideToggle(200, function () {
-                    $toggle.text($body.is(':visible') ? panelCollapseLabel : panelExpandLabel);
+                    var isVisible = $body.is(':visible');
+                    if (isIconToggle) {
+                        $toggle.find('i')
+                            .toggleClass('fa-chevron-up', isVisible)
+                            .toggleClass('fa-chevron-down', !isVisible);
+                        $toggle.attr('title', isVisible ? panelCollapseLabel : panelExpandLabel);
+                    } else {
+                        $toggle.text(isVisible ? panelCollapseLabel : panelExpandLabel);
+                    }
                 });
             });
 

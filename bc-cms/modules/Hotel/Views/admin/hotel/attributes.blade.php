@@ -14,7 +14,9 @@
             <div class="panel">
                 <div class="panel-title">
                     <strong>{{$blockName}}</strong>
-                    <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+                    <span class="panel-toggle panel-collapse-toggle panel-collapse-toggle-icon" title="{{ __('Collapse') }}">
+                        <i class="fa fa-chevron-up"></i>
+                    </span>
                 </div>
                 <div class="panel-body">
                     @foreach($blockTypes as $type)
