@@ -21,7 +21,7 @@
                             <div class="panel-title">{{__('Блок атрибутов')}}</div>
                             <div class="panel-body">
                                 <select name="form_block_id" id="attr-form-block" class="form-control">
-                                    <option value="" disabled @if(empty($selectedBlockId)) selected @endif hidden>{{__('Блок атрибутов')}}</option>
+                                    <option value="" disabled @if(empty($selectedBlockId)) selected @endif hidden>{{__('Выберите главный блок')}}</option>
                                     @foreach(($blocks ?? []) as $block)
                                         @php $blockTranslate = $block->translate(app_get_locale()); @endphp
                                         <option value="{{$block->id}}" @if(!empty($selectedBlockId) && $selectedBlockId == $block->id) selected @endif>
@@ -35,7 +35,7 @@
                             <div class="panel-title">{{__('Тип атрибутов')}}</div>
                             <div class="panel-body">
                                 <select name="block_type_id" id="attr-form-block-type" class="form-control">
-                                    <option value="" disabled @if(empty($row->block_type_id)) selected @endif hidden>{{__('Тип атрибутов')}}</option>
+                                    <option value="" disabled @if(empty($row->block_type_id)) selected @endif hidden>{{__('Выберите тип атрибутов')}}</option>
                                 </select>
                             </div>
                         </div>
@@ -77,7 +77,7 @@
         var $blockSelect = $('#attr-form-block');
         var $typeSelect = $('#attr-form-block-type');
         var $formSubmit = $('#attr-form-submit');
-        var typePlaceholder = @json(__('Тип атрибутов'));
+        var typePlaceholder = @json(__('Выберите тип атрибутов'));
         var selectedTypeId = @json($row->block_type_id ?: null);
 
         function syncFormSubmitState() {

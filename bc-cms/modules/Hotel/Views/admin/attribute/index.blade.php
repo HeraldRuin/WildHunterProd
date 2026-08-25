@@ -14,7 +14,7 @@
                         <div class="panel-title">{{__('Блок атрибутов')}}</div>
                         <div class="panel-body">
                             <select name="form_block_id" id="attr-form-block" class="form-control">
-                                <option value="" disabled selected hidden>{{__('Блок атрибутов')}}</option>
+                                <option value="" disabled selected hidden>{{__('Выберите главный блок')}}</option>
                                 @foreach(($blocks ?? []) as $block)
                                     @php $blockTranslate = $block->translate(app_get_locale()); @endphp
                                     <option value="{{$block->id}}">
@@ -28,7 +28,7 @@
                         <div class="panel-title">{{__('Тип атрибутов')}}</div>
                         <div class="panel-body">
                             <select name="block_type_id" id="attr-form-block-type" class="form-control">
-                                <option value="" disabled selected hidden>{{__('Тип атрибутов')}}</option>
+                                <option value="" disabled selected hidden>{{__('Выберите тип атрибутов')}}</option>
                             </select>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
                         <div class="form-group mb-0" style="min-width: 260px; flex: 1;">
                             <label>{{__('Блок атрибутов')}}</label>
                             <select name="block_id" id="attr-block-filter" class="form-control">
-                                <option value="" disabled selected hidden>{{__('Блок атрибутов')}}</option>
+                                <option value="" disabled selected hidden>{{__('Выберите главный блок')}}</option>
                                 @foreach(($blocks ?? []) as $block)
                                     @php $blockTranslate = $block->translate(app_get_locale()); @endphp
                                     <option value="{{$block->id}}">
@@ -81,7 +81,7 @@
                         <div class="form-group mb-0" style="min-width: 260px; flex: 1;">
                             <label>{{__('Тип атрибутов')}}</label>
                             <select name="block_type_id" id="attr-block-type-filter" class="form-control">
-                                <option value="" disabled selected hidden>{{__('Тип атрибутов')}}</option>
+                                <option value="" disabled selected hidden>{{__('Выберите тип атрибутов')}}</option>
                             </select>
                         </div>
                     </div>
@@ -154,7 +154,7 @@
         var $rows = $('.attr-row');
         var $filterEmptyRow = $('.attr-filter-empty-row');
         var $filterEmptyText = $('.attr-filter-empty-text');
-        var typePlaceholder = @json(__('Тип атрибутов'));
+        var typePlaceholder = @json(__('Выберите тип атрибутов'));
         var selectMessage = @json(__('Выберите блок и тип атрибутов'));
         var emptyMessage = @json(__('Нет атрибутов для выбранного типа'));
 
