@@ -10,6 +10,7 @@ use Modules\AdminController;
 use Modules\Core\Events\CreatedServicesEvent;
 use Modules\Core\Events\UpdatedServiceEvent;
 use Modules\Core\Models\Attributes;
+use Modules\Core\Models\AttributeBlock;
 use Modules\Hotel\Hook;
 use Modules\Location\Models\Location;
 use Modules\Hotel\Models\Hotel;
@@ -116,7 +117,15 @@ class HotelController extends AdminController
 
         $data = [
             'row'            => $row,
-            'attributes'     => $this->attributesClass::where('service', 'hotel')->get(),
+            'attributes'     => $this->attributesClass::where('service', 'hotel')->with(['terms'])->get(),
+            'attributeBlocks'=> AttributeBlock::where('service', 'hotel')
+                ->with(['types' => function ($query) {
+                    $query->with(['attributes' => function ($attrQuery) {
+                        $attrQuery->where('service', 'hotel')->with(['terms']);
+                    }]);
+                }])
+                ->orderBy('created_at', 'asc')
+                ->get(),
             'hotel_location' => $this->locationClass::where('status', 'publish')->get()->toTree(),
             'location_category' => $this->locationCategoryClass::where('status', 'publish')->get(),
             'translation'    => new $this->hotelTranslationClass(),
@@ -206,7 +215,15 @@ class HotelController extends AdminController
             'row'            => $row,
             'translation'    => $translation,
             "selected_terms" => $row->terms->pluck('term_id'),
-            'attributes'     => $this->attributesClass::where('service', 'hotel')->get(),
+            'attributes'     => $this->attributesClass::where('service', 'hotel')->with(['terms'])->get(),
+            'attributeBlocks'=> AttributeBlock::where('service', 'hotel')
+                ->with(['types' => function ($query) {
+                    $query->with(['attributes' => function ($attrQuery) {
+                        $attrQuery->where('service', 'hotel')->with(['terms']);
+                    }]);
+                }])
+                ->orderBy('created_at', 'asc')
+                ->get(),
             'hotel_location'  => $this->locationClass::where('status', 'publish')->get()->toTree(),
             'location_category' => $this->locationCategoryClass::where('status', 'publish')->get(),
             'can_assign_user' => is_null($row->admin_base),

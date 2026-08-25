@@ -8,13 +8,18 @@ class Attributes extends BaseModel
 {
     use SoftDeletes;
     protected $table = 'bc_attrs';
-    protected $fillable = ['name','display_type','hide_in_single','hide_in_filter_search','position'];
+    protected $fillable = ['block_type_id','name','display_type','hide_in_single','hide_in_filter_search','position'];
     protected $slugField = 'slug';
     protected $slugFromField = 'name';
 
     public function terms()
     {
         return $this->hasMany(Terms::class, 'attr_id', 'id')->with(['translation']);
+    }
+
+    public function blockType()
+    {
+        return $this->belongsTo(AttributeBlockType::class, 'block_type_id', 'id');
     }
 
     public function fill(array $attributes)

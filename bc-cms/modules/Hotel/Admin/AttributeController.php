@@ -4,6 +4,8 @@ namespace Modules\Hotel\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Modules\AdminController;
+use Modules\Core\Models\AttributeBlock;
+use Modules\Core\Models\AttributeBlockType;
 use Modules\Core\Models\Attributes;
 use Modules\Core\Models\AttributesTranslation;
 use Modules\Core\Models\Terms;
@@ -14,11 +16,15 @@ use Modules\Hotel\Models\Hotel;
 class AttributeController extends AdminController
 {
     protected $attributesClass;
+    protected $attributeBlockClass;
+    protected $attributeBlockTypeClass;
     protected $termsClass;
     public function __construct()
     {
         $this->setActiveMenu(route('hotel.admin.index'));
         $this->attributesClass = Attributes::class;
+        $this->attributeBlockClass = AttributeBlock::class;
+        $this->attributeBlockTypeClass = AttributeBlockType::class;
         $this->termsClass = Terms::class;
     }
     public function callAction($method, $parameters)
@@ -40,6 +46,8 @@ class AttributeController extends AdminController
         $listAttr->orderBy('created_at', 'desc');
         $data = [
             'rows'        => $listAttr->get(),
+            'blocks'      => $this->attributeBlockClass::where('service', 'hotel')->orderBy('id')->get(),
+            'blockTypes'  => $this->attributeBlockTypeClass::where('service', 'hotel')->orderBy('position')->orderBy('id')->get(),
             'row'         => new $this->attributesClass(),
             'translation'    => new AttributesTranslation(),
             'breadcrumbs' => [
@@ -67,6 +75,7 @@ class AttributeController extends AdminController
         $data = [
             'translation'    => $translation,
             'enable_multi_lang'=>true,
+            'blockTypes'  => $this->attributeBlockTypeClass::where('service', 'hotel')->orderBy('position')->orderBy('id')->get(),
             'rows'        => $this->attributesClass::where("service", 'hotel')->get(),
             'row'         => $row,
             'breadcrumbs' => [
@@ -90,10 +99,11 @@ class AttributeController extends AdminController
     public function store(Request $request)
     {
         $this->checkPermission('hotel_manage_attributes');
+        $id = $request->input('id');
+
         $this->validate($request, [
             'name' => 'required'
         ]);
-        $id = $request->input('id');
         if ($id) {
             $row = $this->attributesClass::find($id);
             if (empty($row)) {

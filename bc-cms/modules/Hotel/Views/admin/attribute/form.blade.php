@@ -4,6 +4,18 @@
 </div>
 @if(is_default_lang())
     <div class="form-group">
+        <label>{{__('Тип атрибутов')}}</label>
+        <select name="block_type_id" class="form-control">
+            <option value="" disabled @if(empty($row->block_type_id)) selected @endif hidden>{{__('Тип атрибутов')}}</option>
+            @foreach(($blockTypes ?? []) as $blockType)
+                @php $blockTypeTranslate = $blockType->translate(app_get_locale()); @endphp
+                <option value="{{$blockType->id}}" @if($row->block_type_id == $blockType->id) selected @endif>
+                    {{$blockTypeTranslate->name ?: $blockType->name}}
+                </option>
+            @endforeach
+        </select>
+    </div>
+    <div class="form-group">
         <label>{{__("Position Order")}}</label>
         <input type="number" min="0" value="{{$row->position}}" placeholder="{{__("Ex: 1")}}" name="position" class="form-control">
         <small>
