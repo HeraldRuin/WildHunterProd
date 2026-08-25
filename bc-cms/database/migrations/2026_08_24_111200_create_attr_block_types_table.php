@@ -4,35 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Для БД, где уже прошла первая миграция блоков.
+ * Добавляет вложенные блоки (типы) и переводит связь атрибутов на них.
+ */
 return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('bc_attr_blocks')) {
-            Schema::create('bc_attr_blocks', function (Blueprint $table) {
-                $table->bigIncrements('id');
-                $table->string('name')->nullable();
-                $table->string('service', 50)->nullable();
-                $table->bigInteger('create_user')->nullable();
-                $table->bigInteger('update_user')->nullable();
-                $table->softDeletes();
-                $table->timestamps() ;
-            });
-        }
-
-        if (!Schema::hasTable('bc_attr_blocks_translations')) {
-            Schema::create('bc_attr_blocks_translations', function (Blueprint $table) {
-                $table->bigIncrements('id');
-                $table->bigInteger('origin_id')->nullable();
-                $table->string('locale', 10)->nullable();
-                $table->string('name')->nullable();
-                $table->bigInteger('create_user')->nullable();
-                $table->bigInteger('update_user')->nullable();
-                $table->unique(['origin_id', 'locale']);
-                $table->timestamps();
-            });
-        }
-
         if (!Schema::hasTable('bc_attr_block_types')) {
             Schema::create('bc_attr_block_types', function (Blueprint $table) {
                 $table->bigIncrements('id');
@@ -86,7 +65,5 @@ return new class extends Migration
 
         Schema::dropIfExists('bc_attr_block_types_translations');
         Schema::dropIfExists('bc_attr_block_types');
-        Schema::dropIfExists('bc_attr_blocks_translations');
-        Schema::dropIfExists('bc_attr_blocks');
     }
 };
