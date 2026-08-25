@@ -18,6 +18,6 @@ class AttributeBlock extends BaseModel
 
     public function types()
     {
-        return $this->hasMany(AttributeBlockType::class, 'block_id', 'id')->orderBy('position');
+        return $this->hasMany(AttributeBlockType::class, 'block_id', 'id')->orderBy('position')->orderBy('id');
     }
 }

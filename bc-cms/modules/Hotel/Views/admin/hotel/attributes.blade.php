@@ -9,25 +9,25 @@
             $blockTranslation = $block->translate(app_get_locale());
             $blockName = $blockTranslation->name ?: $block->name;
             $blockTypes = $block->types ?? collect();
-            $typesWithAttributes = $blockTypes->filter(function ($type) {
-                return !empty($type->attributes) && count($type->attributes);
-            });
         @endphp
-        @if($typesWithAttributes->count())
-            <div class="mb20">
-                <div style="margin-bottom: 12px;"><strong>{{$blockName}}</strong></div>
-                @foreach($typesWithAttributes as $type)
-                    @php
-                        $typeTranslation = $type->translate(app_get_locale());
-                        $typeAttributes = $type->attributes;
-                    @endphp
-                    <div class="panel">
-                        <div class="panel-title">
-                            <strong>{{$typeTranslation->name ?: $type->name}}</strong>
-                        </div>
-                        <div class="panel-body">
+        @if($blockTypes->count())
+            <div class="panel">
+                <div class="panel-title">
+                    <strong>{{$blockName}}</strong>
+                    <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
+                </div>
+                <div class="panel-body">
+                    @foreach($blockTypes as $type)
+                        @php
+                            $typeTranslation = $type->translate(app_get_locale());
+                            $typeAttributes = $type->attributes ?? collect();
+                        @endphp
+                        <div class="@if(!$loop->last) mb20 @endif">
+                            <div class="mb10">
+                                <strong>{{$typeTranslation->name ?: $type->name}}</strong>
+                            </div>
                             <div class="terms-scrollable">
-                                @foreach($typeAttributes as $attribute)
+                                @forelse($typeAttributes as $attribute)
                                     @php
                                         $assignedAttributeIds->push($attribute->id);
                                         $translate = $attribute->translate(app_get_locale());
@@ -39,11 +39,13 @@
                                             <span class="term-name">{{$translate->name}}</span>
                                         </label>
                                     @endif
-                                @endforeach
+                                @empty
+                                    <div class="text-muted">{{__('Нет атрибутов')}}</div>
+                                @endforelse
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         @endif
     @endforeach
