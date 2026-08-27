@@ -108,6 +108,10 @@
                 : route('hotel.admin.dadata.party');
         @endphp
         @push('js')
+        @if(!request()->routeIs('hotel.vendor.*'))
+        <script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/inputmask.min.js"></script>
+        <script src="{{ asset('js/phone-mask.js?_ver=' . config('app.asset_version')) }}"></script>
+        @endif
         <script>
             jQuery(function ($) {
                 var partyUrl = @json($dadataPartyUrl);
@@ -206,7 +210,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-phone"></i></span>
                         </div>
-                        <input type="text" name="aggregator_owner_phone" class="form-control" value="{{ $row->aggregator_owner_phone }}" placeholder="{{__('Owner phone')}}" title="{{__('Owner phone')}}">
+                        <input type="text" name="aggregator_owner_phone" class="form-control phone-mask" value="{{ $row->aggregator_owner_phone }}" placeholder="{{__('Owner phone')}}" title="{{__('Owner phone')}}">
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -235,7 +239,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-phone"></i></span>
                         </div>
-                        <input type="text" name="guest_admin_phone" class="form-control" value="{{ $row->guest_admin_phone }}" placeholder="{{__('Administrator phone')}}" title="{{__('Administrator phone')}}">
+                        <input type="text" name="guest_admin_phone" class="form-control phone-mask" value="{{ $row->guest_admin_phone }}" placeholder="{{__('Administrator phone')}}" title="{{__('Administrator phone')}}">
                     </div>
                 </div>
                 <div class="col-md-6">
