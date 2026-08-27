@@ -39,7 +39,7 @@
                 <div class="label">{{__('Last name')}}</div>
                 <div class="val">{{$customerLastName}}</div>
             </div>
-            @if(!($to === 'admin' && !empty($isNewBooking)))
+            @if(!in_array($to ?? '', ['admin', 'BaseAdmin'], true))
             <div class="info-email b-tr">
                 <div class="label">{{__('Email')}}</div>
                 <div class="val">{{$customerEmail}}</div>
