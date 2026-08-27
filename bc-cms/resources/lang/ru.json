@@ -4116,5 +4116,6 @@
     "BaseName": "База",
     " All rights reserved": "Все права защищены",
     "No files in this folder": "В этой папке нет файлов",
-    "Do you want to delete this folder and all files inside it?": "Удалить эту папку вместе со всеми файлами и вложенными папками?"
+    "Do you want to delete this folder and all files inside it?": "Удалить эту папку вместе со всеми файлами и вложенными папками?",
+    "Published": "Опубликован"
 }
