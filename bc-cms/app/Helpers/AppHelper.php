@@ -791,6 +791,9 @@ function status_to_text($status)
         case "pending":
             return __('Pending');
             break;
+        case "publish":
+            return __('Published');
+            break;
         case "partial_payment":
             return __('Partial Payment');
             break;
