@@ -451,40 +451,71 @@ class Booking extends BaseModel
 
     public function sendNewBookingEmails()
     {
-        try {
-            // To Base Admin (админ базы из отеля)
-            $hotel = null;
-            if($this->hotel_id) {
-                if(!$this->relationLoaded('hotel')) {
-                    $this->load('hotel');
-                }
-                $hotel = $this->hotel;
+        $hotel = null;
+        if ($this->hotel_id) {
+            if (!$this->relationLoaded('hotel')) {
+                $this->load('hotel');
             }
+            $hotel = $this->hotel;
+        }
 
-            if($hotel && $hotel->admin_base) {
+        // Админу базы
+        try {
+            if ($hotel && $hotel->admin_base) {
                 $baseAdmin = User::find($hotel->admin_base);
 
-                if($baseAdmin && !empty($baseAdmin->email)) {
-                    $baseAdminEmail = $baseAdmin->email;
-                    Mail::to($baseAdminEmail)->send(new NewBookingEmail($this, 'admin', $baseAdmin));
+                if ($baseAdmin && !empty($baseAdmin->email)) {
+                    Mail::to($baseAdmin->email)->send(new NewBookingEmail($this, 'admin', $baseAdmin));
                 }
             }
+        } catch (\Throwable $exception) {
+            Log::error('sendNewBookingEmails: ошибка письма админу базы', [
+                'booking_id' => $this->id,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
-            // To Hunter (охотнику - создателю брони)
-            if($this->create_user) {
-                $hunter = User::find($this->create_user);
-                if($hunter && !empty($hunter->email)) {
-                    Mail::to($hunter->email)->send(new NewBookingEmail($this, 'customer'));
-                }
+        // Постояльцу: email из формы брони, иначе из профиля создателя/customer_id
+        try {
+            $customerEmail = $this->resolveNewBookingCustomerEmail();
+
+            if ($customerEmail) {
+                Mail::to($customerEmail)->send(new NewBookingEmail($this, 'customer'));
+            } else {
+                Log::warning('sendNewBookingEmails: нет email постояльца', [
+                    'booking_id' => $this->id,
+                    'create_user' => $this->create_user,
+                    'customer_id' => $this->customer_id,
+                    'booking_email' => $this->email,
+                ]);
             }
-
-        }catch (\Exception | \Swift_TransportException $exception){
-            Log::error('sendNewBookingEmails: Ошибка при отправке писем о новом бронировании', [
+        } catch (\Throwable $exception) {
+            Log::error('sendNewBookingEmails: ошибка письма постояльцу', [
                 'booking_id' => $this->id,
                 'error' => $exception->getMessage(),
                 'trace' => $exception->getTraceAsString(),
             ]);
         }
+    }
+
+    protected function resolveNewBookingCustomerEmail(): ?string
+    {
+        if (!empty($this->email)) {
+            return $this->email;
+        }
+
+        foreach ([$this->create_user, $this->customer_id] as $userId) {
+            if (!$userId) {
+                continue;
+            }
+
+            $user = User::find($userId);
+            if ($user && !empty($user->email)) {
+                return $user->email;
+            }
+        }
+
+        return null;
     }
 
     public function sendStatusUpdatedEmails(){
