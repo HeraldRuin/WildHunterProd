@@ -11,10 +11,12 @@ use Modules\Core\Events\CreatedServicesEvent;
 use Modules\Core\Events\UpdatedServiceEvent;
 use Modules\Core\Models\Attributes;
 use Modules\Core\Models\AttributeBlock;
+use Modules\Core\Models\AttributeBlockType;
 use Modules\Core\Models\Terms;
 use Modules\Hotel\Hook;
 use Modules\Location\Models\Location;
 use Modules\Hotel\Models\Hotel;
+use Modules\Hotel\Models\HotelAttrTypeDetail;
 use Modules\Hotel\Models\HotelTerm;
 use Modules\Hotel\Models\HotelTranslation;
 use Modules\Location\Models\LocationCategory;
@@ -237,6 +239,7 @@ class HotelController extends AdminController
             'row'            => $row,
             'translation'    => $translation,
             "selected_terms" => $row->terms->pluck('term_id'),
+            'bath_sauna_details' => $this->getBathSaunaDetails($row),
             'attributes'     => $this->attributesClass::where('service', 'hotel')->with(['terms'])->get(),
             'attributeBlocks'=> $this->getHotelAttributeBlocks(),
             'hotel_location'  => $this->locationClass::where('status', 'publish')->get()->toTree(),
@@ -374,6 +377,7 @@ class HotelController extends AdminController
         $this->checkPermission('hotel_manage_attributes');
         if (empty($request->input('terms'))) {
             $this->hotelTermClass::where('target_id', $row->id)->delete();
+            $this->saveBathSaunaTypeDetails($row, $request, []);
         } else {
             $term_ids = $request->input('terms');
             foreach ($term_ids as $term_id) {
@@ -383,7 +387,87 @@ class HotelController extends AdminController
                 ]);
             }
             $this->hotelTermClass::where('target_id', $row->id)->whereNotIn('term_id', $term_ids)->delete();
+            $this->saveBathSaunaTypeDetails($row, $request, array_map('intval', $term_ids));
         }
+    }
+
+    protected function saveBathSaunaTypeDetails($row, $request, array $selectedTermIds): void
+    {
+        $blockTypeId = (int) $request->input('bath_sauna_block_type_id');
+        if ($blockTypeId <= 0) {
+            $blockTypeId = (int) AttributeBlockType::where('service', 'hotel')
+                ->where('name', 'Бани и сауны')
+                ->value('id');
+        }
+        if ($blockTypeId <= 0) {
+            return;
+        }
+
+        $bathSaunaTermIds = array_map('intval', (array) $request->input('bath_sauna_term_ids', []));
+        if (empty($bathSaunaTermIds)) {
+            $bathSaunaTermIds = Attributes::where('service', 'hotel')
+                ->where('block_type_id', $blockTypeId)
+                ->with('terms')
+                ->get()
+                ->flatMap(fn ($attribute) => $attribute->terms->pluck('id'))
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
+        $selectedBathSaunaTermIds = array_values(array_intersect($selectedTermIds, $bathSaunaTermIds));
+
+        if (empty($selectedBathSaunaTermIds)) {
+            HotelAttrTypeDetail::where('hotel_id', $row->id)
+                ->where('block_type_id', $blockTypeId)
+                ->delete();
+            return;
+        }
+
+        $details = $this->normalizeBathSaunaDetails($request->input('bath_sauna_details', []));
+
+        $record = HotelAttrTypeDetail::firstOrNew([
+            'hotel_id' => $row->id,
+            'block_type_id' => $blockTypeId,
+        ]);
+        $record->details = $details;
+        if (empty($record->create_user)) {
+            $record->create_user = Auth::id();
+        }
+        $record->update_user = Auth::id();
+        $record->save();
+    }
+
+    protected function getBathSaunaDetails($row): array
+    {
+        $blockTypeId = AttributeBlockType::where('service', 'hotel')
+            ->where('name', 'Бани и сауны')
+            ->value('id');
+
+        if (!$blockTypeId) {
+            return [];
+        }
+
+        $record = HotelAttrTypeDetail::where('hotel_id', $row->id)
+            ->where('block_type_id', $blockTypeId)
+            ->first();
+
+        return is_array($record?->details) ? $record->details : [];
+    }
+
+    protected function normalizeBathSaunaDetails($details): array
+    {
+        $details = is_array($details) ? $details : [];
+
+        return [
+            'capacity' => isset($details['capacity']) && $details['capacity'] !== '' ? (int) $details['capacity'] : null,
+            'payment_type' => in_array($details['payment_type'] ?? null, ['included', 'paid_separately'], true)
+                ? $details['payment_type']
+                : null,
+            'price_per_hour' => isset($details['price_per_hour']) && $details['price_per_hour'] !== ''
+                ? (float) $details['price_per_hour']
+                : null,
+            'min_hours' => isset($details['min_hours']) && $details['min_hours'] !== '' ? (int) $details['min_hours'] : null,
+        ];
     }
 
     public function unassignAdmin(Request $request, $id)
