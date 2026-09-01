@@ -260,11 +260,15 @@
         <span class="panel-toggle panel-collapse-toggle">{{ __('Collapse') }}</span>
     </div>
     <div class="panel-body">
-        <div class="form-group magic-field" data-id="content" data-type="content" data-editor="1">
-            <label class="control-label" data->{{__("Description")}}</label>
-            <div class="">
-                <textarea name="content" class="d-none has-ckeditor" id="content" cols="30" rows="10">{{$translation->content}}</textarea>
-            </div>
+{{--        <div class="form-group magic-field" data-id="content" data-type="content" data-editor="1">--}}
+{{--            <label class="control-label" data->{{__("Description")}}</label>--}}
+{{--            <div class="">--}}
+{{--                <textarea name="content" class="d-none has-ckeditor" id="content" cols="30" rows="10">{{$translation->content}}</textarea>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+        <div class="form-group">
+            <label class="control-label">{{__("Description")}}</label>
+            <textarea name="content" class="form-control" rows="10">{{$translation->content}}</textarea>
         </div>
 {{--        @if(is_default_lang())--}}
 {{--            <div class="form-group">--}}
